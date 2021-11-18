@@ -154,23 +154,13 @@ for (year in 1:256) {
   # year=210
   Catch <- sim_1$layers[[paste0("layer[fishing_ps_",year,"]")]]
   
-  Catch_DF_year <- data.frame(Catch = Catch$data[1:(13*17)],
-                              Lat = 
-                              )
-  
-  
-  %>% mutate(Year=year) # more than 1 obs
+  Catch_DF_year <- data.frame(Catch = as.numeric(Catch$data[1:(13*17)]),
+                              Lat = rep(Lat_grid$Lat,17),
+                              Lon = rep(Lon_grid$Lon,each=13),
+                              Year = year)
 
-  if(year==121) LF_DF0 <- LF_DF_year
-  else LF_DF0 <- rbind(LF_DF0,LF_DF_year)                                 
+  if(year==1) Catch_DF <- Catch_DF_year
+  else Catch_DF <- rbind(Catch_DF,Catch_DF_year)                                 
 }
 
-names(LF_DF0)[1] <- "LatLon"
-names(LF_DF0)[2:40] <- LF$data$length_bins[1:39]
-
-LF_DF <- LF_DF0 %>% gather(2:40,key="Length",value = "LF") %>%
-  mutate(Length=as.numeric(Length),LF=as.numeric(LF)) %>%
-  separate(LatLon, c("lat", "lon"), "-")
-
-LF_DF <- left_join(left_join(LF_DF,Lat_grid),Lon_grid) %>%
-  mutate(Lat=as.numeric(levels(Lat))[Lat],Lon=as.numeric(levels(Lon))[Lon])
+save(Catch_DF, file="Data/PS_Catch.RData")
