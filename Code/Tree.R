@@ -8,7 +8,7 @@ library(tidyverse)
 load("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/PS_LF.RData")
 
 LF <- LF_DF[,3:7] %>%
-  mutate(Length2=cut(Length,breaks = c(0,seq(30, 160, 10),220),right = F,labels = seq(20, 160, 10))) %>%
+  mutate(Length2=cut(Length,breaks = c(0,seq(30, 140, 10),220),right = F,labels = seq(20, 140, 10))) %>%
   mutate(year=ceiling(Year/4),quarter=(Year-1)%%4 +1) %>%
   group_by(year,quarter,Lat,Lon,Length2) %>% summarise(LF=sum(LF)) %>%
   spread(Length2,LF) %>% rename(lat=Lat,lon=Lon) %>% data.frame()
@@ -18,8 +18,8 @@ LF <- LF_DF[,3:7] %>%
 library(RegressionTree)
 
 fcol <- 5 # the first column with LF_Tree info
-lcol <- 19 # the last column with LF_Tree info
-bins <- seq(20,160,10)
+lcol <- 17 # the last column with LF_Tree info
+bins <- seq(20,140,10)
 Nsplit <- 3 # the number of splits (the number of cells - 1)
 dir.create("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Tree/PS/")
 save_dir <- "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Tree/PS/"
@@ -44,7 +44,12 @@ LF_new$lat <- as.numeric(LF_new$lat)
 LF_new$lon <- as.numeric(LF_new$lon)
 
 # run the regression tree
-LF_Tree <- loop_regression_tree(LF_new,fcol,lcol,bins,Nsplit,save_dir,include_dummy=TRUE,max_select = 2)
+# LF_Tree <- run_regression_tree(LF_new,fcol,lcol,bins,Nsplit,save_dir, include_dummy = TRUE)
+LF_Loop <- loop_regression_tree(LF,fcol,lcol,bins,Nsplit,save_dir,max_select = 2)
+
+select <- as.numeric(LF_Loop$Imp_DF[1,1:Nsplit])
+
+LF_Tree <- run_regression_tree(LF_new,fcol,lcol,bins,Nsplit,save_dir,manual=TRUE,select=select,include_dummy = TRUE)
 
 # extract catch flag derived from the regression tree package
 Catch_Flag <- LF_Tree$LF$Flag3[which(LF_Tree$LF$dummy == TRUE)]
