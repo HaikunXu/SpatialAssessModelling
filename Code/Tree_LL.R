@@ -1,4 +1,4 @@
-# Regression Tree
+# Regression Tree for PS
 
 dir.create("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Tree")
 
@@ -110,32 +110,3 @@ f4 <- ggplot(data=Catch_Fishery_plot) +
 
 library(patchwork)
 (f1 + f2) / (f3 + f4)
-
-
-
-### Longline
-
-load("Data/LL_LF.RData")
-
-LF <- LF_DF[,3:7] %>%
-  mutate(Length2=cut(Length,breaks = c(0,seq(30, 170, 10),220),right = F,labels = seq(20, 170, 10))) %>%
-  mutate(year=ceiling(Year/4),quarter=(Year-1)%%4 +1) %>%
-  group_by(year,quarter,Lat,Lon,Length2) %>% summarise(LF=sum(LF)) %>%
-  spread(Length2,LF) %>% rename(lat=Lat,lon=Lon) %>% data.frame()
-
-# remove two locations
-LF <- LF %>% filter(lon %in% c(32.5,52.5,72.5,92.5))
-
-fcol <- 5 # the first column with LF_Tree info
-lcol <- 20 # the last column with LF_Tree info
-bins <- seq(20,170,10)
-Nsplit <- 3 # the number of splits (the number of cells - 1)
-save_dir <- "Data/"
-
-# run the regression tree
-LF_Tree <- run_regression_tree(LF,fcol,lcol,bins,Nsplit,save_dir)
-
-# loop the regression tree for various combinations of splits
-# library(RegressionTree)
-
-LF_Tree_Loop <- loop_regression_tree(LF,fcol,lcol,Nsplit,save_dir,max_select = 2,quarter=FALSE)
