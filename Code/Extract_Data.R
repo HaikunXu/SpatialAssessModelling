@@ -47,6 +47,7 @@ for (year in 9:238) {
 names(LF_DF0)[1] <- "LatLon"
 names(LF_DF0)[2:40] <- LF$data$length_bins[1:39]
 
+LF_DF0 <- unique(LF_DF0)
 
 LF_DF <- LF_DF0 %>% gather(2:40,key="Length",value = "LF") %>%
   mutate(Length=as.numeric(Length),LF=as.numeric(LF)) %>%
@@ -68,7 +69,7 @@ ggsave(f1,file="Data/LL_LF.png", width = 10, height = 8)
 
 save(LF_DF,file="Data/LL_LF.RData")
 
-#nominal LL LF
+# nominal LL LF
 Data <- LF_DF0 %>% gather(2:40,key="Length",value = "LF") %>%
   # mutate(spp=floor(Length/10)*10) %>%
   mutate(Length=as.numeric(Length)) %>%
@@ -99,6 +100,8 @@ for (year in 121:256) {
 
 names(LF_DF0)[1] <- "LatLon"
 names(LF_DF0)[2:40] <- LF$data$length_bins[1:39]
+
+LF_DF0 <- unique(LF_DF0)
 
 LF_DF <- LF_DF0 %>% gather(2:40,key="Length",value = "LF") %>%
   mutate(Length=as.numeric(Length),LF=as.numeric(LF)) %>%
