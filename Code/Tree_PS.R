@@ -7,6 +7,11 @@ library(tidyverse)
 ### Purse-seine
 load("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/PS_LF.RData")
 
+LF_raw <- LF_DF %>%
+  mutate(year=ceiling(Year/4),quarter=(Year-1)%%4 +1) %>%
+  select(year,quarter,Lat,Lon,Length,LF) %>%
+  rename(lat=Lat,lon=Lon)
+
 LF <- LF_DF[,3:7] %>%
   mutate(Length2=cut(Length,breaks = c(0,seq(30, 150, 10),220),right = F,labels = seq(20, 150, 10))) %>%
   mutate(year=ceiling(Year/4),quarter=(Year-1)%%4 +1) %>%
@@ -23,6 +28,18 @@ bins <- seq(20,150,10)
 Nsplit <- 3 # the number of splits (the number of cells - 1)
 dir.create("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Tree/PS/")
 save_dir <- "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Tree/PS/"
+
+# run the regression tree
+my_select_matrix <- data.matrix(expand.grid(
+  select1 = 1:2,
+  select2 = 1:2,
+  select3 = 1:2
+))
+
+LF_Loop <- loop_regression_tree(LF,fcol,lcol,bins,Nsplit,save_dir,select_matrix = my_select_matrix)
+make.split.map(LF_Loop$LF_Tree$LF,Nsplit,save_dir)
+
+select <- as.numeric(LF_Loop$Imp_DF_sorted[1,1:Nsplit])
 
 # load PS catch data
 load("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/PS_Catch.RData")
@@ -44,13 +61,6 @@ LF_new <- rbind(LF,Catch_Grid)
 LF_new$lat <- as.numeric(LF_new$lat)
 LF_new$lon <- as.numeric(LF_new$lon)
 
-# run the regression tree
-# LF_Tree <- run_regression_tree(LF_new,fcol,lcol,bins,Nsplit,save_dir, include_dummy = TRUE)
-LF_Loop <- loop_regression_tree(LF,fcol,lcol,bins,Nsplit,save_dir,max_select = 2)
-f1 <- make.split.map(LF_Loop$LF_Tree$LF,Nsplit,save_dir)
-
-select <- as.numeric(LF_Loop$Imp_DF_sorted[1,1:Nsplit])
-
 LF_Tree <- run_regression_tree(LF_new,fcol,lcol,bins,Nsplit,save_dir,manual=TRUE,select=select,include_dummy = TRUE)
 
 # extract catch flag derived from the regression tree package
@@ -67,9 +77,42 @@ Catch_Fishery_plot <- cbind(Catch, Cell) %>%
   summarise(Total_Catch=sum(Catch)) %>%
   mutate(Cell=factor(Cell))
 
-f2 <- ggplot(data=Catch_Fishery_plot) +
+ggplot(data=Catch_Fishery_plot) +
   geom_line(aes(x=year,y=Total_Catch,color=Cell)) +
   theme_bw()
+# 
+# library(patchwork)
+# ggsave((f1 + f2), file=paste0(save_dir,"Trees.png"), width = 14, height = 12)
+
+write.csv(Catch_Fishery,file=paste0(save_dir,"PS_Catch.csv"),row.names = FALSE)
+
+# use the regression tree package to group lf
+LF_Grid <- cbind(LF_raw[,1:4],matrix(0,nrow=nrow(LF),ncol=lcol-fcol+1))
+LF_Grid$dummy = TRUE
+names(LF_Grid) <- names(LF)
+
+# LF[6:8,fcol:lcol] <- LF[6:8,fcol:lcol] / 2 
+# LF_new include dummy data for catch allocation
+LF_new <- rbind(LF,LF_Grid)
+LF_new$lat <- as.numeric(LF_new$lat)
+LF_new$lon <- as.numeric(LF_new$lon)
+
+LF_Tree <- run_regression_tree(LF_new,fcol,lcol,bins,Nsplit,save_dir,manual=TRUE,select=select,include_dummy = TRUE)
+
+# extract catch flag derived from the regression tree package
+Cell <- LF_Tree$LF$Flag3[which(LF_Tree$LF$dummy == TRUE)]
+
+# combine the flag with catch data and then group catch
+LF_Fishery <- cbind(LF_raw, Cell) %>%
+  group_by(Cell,year,quarter,Length) %>%
+  summarise(lf=mean(LF)) %>%
+  mutate(Cell=factor(Cell)) %>%
+  spread(Length,lf)
+
+
+
+
+
 
 # catch-weighted tree
 Catch$lat <- as.numeric(levels(Catch$lat))[Catch$lat]
@@ -79,7 +122,7 @@ LF_weight <- left_join(LF,Catch) %>%
   rename(weight=Catch) %>%
   mutate(weight=weight/mean(weight))
 
-LF_Loop <- loop_regression_tree(LF_weight,fcol,lcol,bins,Nsplit,save_dir,max_select = 2)
+LF_Loop <- loop_regression_tree(LF,fcol,lcol,bins,Nsplit,save_dir,select_matrix = my_select_matrix)
 f3 <- make.split.map(LF_Loop$LF_Tree$LF,Nsplit,save_dir)
 
 select <- as.numeric(LF_Loop$Imp_DF_sorted[1,1:Nsplit])
@@ -107,6 +150,7 @@ Catch_Fishery_plot <- cbind(Catch, Cell) %>%
 f4 <- ggplot(data=Catch_Fishery_plot) +
   geom_line(aes(x=year,y=Total_Catch,color=Cell)) +
   theme_bw()
-
-library(patchwork)
+# 
+# library(patchwork)
 ggsave((f1 + f2) / (f3 + f4), file=paste0(save_dir,"Trees.png"), width = 14, height = 12)
+
