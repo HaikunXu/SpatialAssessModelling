@@ -21,6 +21,11 @@ fcol <- 5 # the first column with LF_Tree info
 lcol <- 20 # the last column with LF_Tree info
 bins <- seq(20,170,10)
 Nsplit <- 3 # the number of splits (the number of cells - 1)
+my_select_matrix <- data.matrix(expand.grid(
+  select1 = 1:2,
+  select2 = 1:2,
+  select3 = 1:1
+))
 dir.create("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Tree/LL/")
 save_dir <- "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Tree/LL/"
 
@@ -46,8 +51,8 @@ LF_new$lon <- as.numeric(LF_new$lon)
 
 # run the regression tree
 # LF_Tree <- run_regression_tree(LF_new,fcol,lcol,bins,Nsplit,save_dir, include_dummy = TRUE)
-LF_Loop <- loop_regression_tree(LF,fcol,lcol,bins,Nsplit,save_dir,max_select = 2)
-f1 <- make.split.map(LF_Loop$LF_Tree$LF,Nsplit,save_dir)
+LF_Loop <- loop_regression_tree(LF,fcol,lcol,bins,Nsplit,save_dir,select_matrix = my_select_matrix)
+make.split.map(LF_Loop$LF_Tree$LF,Nsplit,save_dir)
 
 select <- as.numeric(LF_Loop$Imp_DF_sorted[1,1:Nsplit])
 

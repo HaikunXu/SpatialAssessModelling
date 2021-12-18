@@ -44,7 +44,7 @@ PS_Catch <- read.csv("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessMod
 PS_Catch <- PS_Catch %>%
   spread(Cell,Total_Catch)
 
-Catch[,11:13] <- PS_Catch[3:5]
+Catch[,11:13] <- PS_Catch[3:5] / 1000
 data$catch <- Catch
 
 # LF
@@ -57,8 +57,8 @@ PS_LF <- PS_LF %>%
   mutate(Yr=(year-1)*4+quarter,
          Seas=1,
          FltSvy=Cell+10,
-         Gender=10,
-         Part=10,
+         Gender=0,
+         Part=0,
          Nsamp=5)
 PS_LF_new <- PS_LF[,c(43:48,4:42)]
 
