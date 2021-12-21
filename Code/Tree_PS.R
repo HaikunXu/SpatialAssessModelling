@@ -95,8 +95,8 @@ Catch$lon <- as.numeric(levels(Catch$lon))[Catch$lon]
 
 Catch_cell <- cbind(Catch, Cell)
 LF_raw_cell <- left_join(LF_raw,Catch_cell) %>%
-  mutate(LF_raised = LF * Catch) %>%
-  # mutate(LF_raised = LF) %>%
+  # mutate(LF_raised = LF * Catch) %>%
+  mutate(LF_raised = LF) %>%
   select(year,quarter,lat,lon,Cell,Length,LF_raised)
 
 # combine the flag with catch data and then group catch
