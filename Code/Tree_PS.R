@@ -113,9 +113,14 @@ LF_Fishery <- LF_raw_cell %>%
 write.csv(LF_Fishery,file=paste0(save_dir,"PS_LF.csv"),row.names = FALSE)
 
 
-
-
 # catch-weighted tree
+Nsplit <- 2 # the number of splits (the number of cells - 1)
+
+# run the regression tree
+my_select_matrix <- data.matrix(expand.grid(
+  select1 = 1:2,
+  select2 = 1:1
+))
 
 LF_weight <- left_join(LF,Catch) %>%
   rename(weight=Catch) %>%
@@ -133,7 +138,7 @@ LF_weight_new$lon <- as.numeric(LF_weight_new$lon)
 
 LF_Tree <- run_regression_tree(LF_weight_new,fcol,lcol,bins,Nsplit,save_dir,manual=TRUE,select=select,include_dummy = TRUE)
 
-Cell <- LF_Tree$LF$Flag3[which(LF_Tree$LF$dummy == TRUE)]
+Cell <- LF_Tree$LF$Flag2[which(LF_Tree$LF$dummy == TRUE)]
 
 # combine the flag with catch data and then group catch
 Catch_Fishery <- cbind(Catch, Cell) %>%
@@ -146,10 +151,9 @@ Catch_Fishery_plot <- cbind(Catch, Cell) %>%
   summarise(Total_Catch=sum(Catch)) %>%
   mutate(Cell=factor(Cell))
 
-f4 <- ggplot(data=Catch_Fishery_plot) +
+ggplot(data=Catch_Fishery_plot) +
   geom_line(aes(x=year,y=Total_Catch,color=Cell)) +
   theme_bw()
 #
 # library(patchwork)
-ggsave((f1 + f2) / (f3 + f4), file=paste0(save_dir,"Trees.png"), width = 14, height = 12)
-
+# ggsave((f1 + f2) / (f3 + f4), file=paste0(save_dir,"Trees.png"), width = 14, height = 12)
