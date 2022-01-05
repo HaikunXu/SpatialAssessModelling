@@ -1,0 +1,59 @@
+library(VAST)
+library(tidyverse)
+
+load("C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/CPUE.RData")
+load("C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/LL_LF.RData")
+
+Data <- left_join(LF_DF,Data_Geostat) %>%
+  rename(Catch_KG2=Catch_KG) %>%
+  mutate(Catch_KG=Catch_KG2*LF) %>% na.omit() %>%
+  filter(Lon %in% c(37.5,102.5) == FALSE) %>%
+  mutate(spp=ifelse(floor(Length/10)*10<190,floor(Length/10)*10,190)) %>%
+  # mutate(spp=Length) %>%
+  group_by(Year,Lat,Lon,spp) %>% summarise(Catch_KG=sum(Catch_KG)) %>%
+  data.frame()
+
+ggplot(Data) +
+  geom_point(aes(x=Year,y=spp,color=Catch_KG>0))
+
+ggplot(Data) +
+  geom_point(aes(x=Lon,y=Lat))
+
+Data_all <- Data %>%
+  group_by(Year,spp) %>%
+  summarise(CPUE=mean(Catch_KG))
+
+# ggplot(Data_all %>% filter(spp==80)) +
+#   geom_point(aes(x=Year,y=CPUE))
+
+Data$Vessel <- "NA"
+Data$AreaSwept_km2 <- 1
+
+Data <- Data %>% filter(spp>20)
+
+settings = make_settings( n_x=12, Region="Other", purpose="index2",max_cells=Inf,use_anisotropy=FALSE,
+                          strata.limits=data.frame('STRATA'=c("IO")), bias.correct=FALSE, ObsModel=c(1,3),
+                          fine_scale = FALSE)
+
+# settings$ObsModel = c(1,3)
+# settings$use_anisotropy = FALSE
+settings$Options[['treat_nonencounter_as_zero']] = TRUE
+
+dir.create("C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/VAST_LF/")
+setwd("C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/VAST_LF/")
+
+fit = fit_model( settings = settings,
+                 Lat_i = Data[,'Lat'],
+                 Lon_i = Data[,'Lon'],
+                 t_i = Data[,'Year'],
+                 c_i = as.numeric(factor(Data[,'spp']))-1,
+                 b_i = Data[,'Catch_KG'],
+                 a_i = Data[,'AreaSwept_km2'],
+                 Npool = 1000000,
+                 newtonsteps = 1,
+                 test_fit = FALSE,
+                 working_dir="C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/VAST_LF/",
+                 grid_dim_km = c(50,50),
+                 observations_LL=Data[,c('Lat','Lon')])
+
+# Results = plot_results(settings=settings, fit=fit)

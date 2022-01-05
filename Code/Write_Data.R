@@ -96,7 +96,7 @@ File <- readLines("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/test1/test_da
 File[19] = "1 #_Nsexes"
 
 # Survey LF
-SS_LF <- read.csv(file="D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Old/Data/VAST_LF/SS.csv")
+SS_LF <- read.csv(file="D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/VAST_LF/SS.csv")
 Line <- match("0 #_N_sizefreq_methods", File)
 File[Line] = 1 # N WtFreq methods to read
 File[Line+1] = 16 # nbins per method
