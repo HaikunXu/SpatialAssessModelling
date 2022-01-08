@@ -37,25 +37,19 @@ for (year in 9:238) {
   # year=210
   LF <- sim_1$obs[[paste0("simulated_lf_ll_",year)]]
   
-  if(length(LF$data$obs)>40) {  # more than 1 obs
-    LF_DF_year <- data.frame(LF$data$obs) %>% mutate(Year=year)
-    SS <- data.frame(LF$data$error_value)
-  }
-  if(length(LF$data$obs)==40) {  # 1 obs
-    LF_DF_year <- data.frame(t(LF$data$obs)) %>% mutate(Year=year)
-    SS <- data.frame(t(LF$data$error_value))
-  }
+  if(length(LF$data$obs)>40) LF_DF_year <- data.frame(LF$data$obs) %>% mutate(Year=year) # more than 1 obs
+  if(length(LF$data$obs)==40) LF_DF_year <- data.frame(t(LF$data$obs)) %>% mutate(Year=year) # 1 obs
   
-  if(year==9) LF_DF0 <- cbind(LF_DF_year,SS[,2])
-  else LF_DF0 <- rbind(LF_DF0,cbind(LF_DF_year,SS[,2]))                                 
+  if(year==9) LF_DF0 <- LF_DF_year
+  else LF_DF0 <- rbind(LF_DF0,LF_DF_year)                                 
 }
 
 names(LF_DF0)[1] <- "LatLon"
-names(LF_DF0)[2:40] <- as.numeric(LF$data$length_bins[1:39])
-names(LF_DF0)[42] <- "N"
+names(LF_DF0)[2:40] <- LF$data$length_bins[1:39]
 
-LF_DF <- LF_DF0 %>% mutate(N = as.numeric(levels(N))[N]) %>%
-  gather(2:40,key="Length",value = "LF") %>%
+LF_DF0 <- unique(LF_DF0)
+
+LF_DF <- LF_DF0 %>% gather(2:40,key="Length",value = "LF") %>%
   mutate(Length=as.numeric(Length),LF=as.numeric(LF)) %>%
   separate(LatLon, c("lat", "lon"), "-")
 
@@ -75,7 +69,7 @@ ggsave(f1,file="Data/LL_LF.png", width = 10, height = 8)
 
 save(LF_DF,file="Data/LL_LF.RData")
 
-#nominal LL LF
+# nominal LL LF
 Data <- LF_DF0 %>% gather(2:40,key="Length",value = "LF") %>%
   # mutate(spp=floor(Length/10)*10) %>%
   mutate(Length=as.numeric(Length)) %>%
@@ -97,26 +91,19 @@ for (year in 121:256) {
   # year=210
   LF <- sim_1$obs[[paste0("simulated_lf_ps_",year)]]
   
-  if(length(LF$data$obs)>40) {
-    LF_DF_year <- data.frame(LF$data$obs) %>% mutate(Year=year) # more than 1 obs
-    SS <- data.frame(LF$data$error_value)
-  } 
-  if(length(LF$data$obs)==40) {
-    LF_DF_year <- data.frame(t(LF$data$obs)) %>% mutate(Year=year) # 1 obs
-    SS <- data.frame(t(LF$data$error_value))
-  }
+  if(length(LF$data$obs)>40) LF_DF_year <- data.frame(LF$data$obs) %>% mutate(Year=year) # more than 1 obs
+  if(length(LF$data$obs)==40) LF_DF_year <- data.frame(t(LF$data$obs)) %>% mutate(Year=year) # 1 obs
   
-  if(year==121) LF_DF0 <- cbind(LF_DF_year,SS[,2])
-  else LF_DF0 <- rbind(LF_DF0,cbind(LF_DF_year,SS[,2]))                                 
+  if(year==121) LF_DF0 <- LF_DF_year
+  else LF_DF0 <- rbind(LF_DF0,LF_DF_year)                                 
 }
 
 names(LF_DF0)[1] <- "LatLon"
 names(LF_DF0)[2:40] <- LF$data$length_bins[1:39]
 
-names(LF_DF0)[42] <- "N"
+LF_DF0 <- unique(LF_DF0)
 
-LF_DF <- LF_DF0 %>% mutate(N = as.numeric(levels(N))[N]) %>%
-  gather(2:40,key="Length",value = "LF") %>%
+LF_DF <- LF_DF0 %>% gather(2:40,key="Length",value = "LF") %>%
   mutate(Length=as.numeric(Length),LF=as.numeric(LF)) %>%
   separate(LatLon, c("lat", "lon"), "-")
 
@@ -132,33 +119,68 @@ ggsave(f2, file="Data/PS_LF.png", width = 10, height = 8)
 
 save(LF_DF, file="Data/PS_LF.RData")
 
-# # Troll LF data
-# for (year in 134:255) {
-#   # year=210
-#   LF <- sim_1$obs[[paste0("simulated_lf_trol_",year)]]
-#   
-#   if(length(LF$data$obs)>40) LF_DF_year <- data.frame(LF$data$obs) %>% mutate(Year=year) # more than 1 obs
-#   if(length(LF$data$obs)==40) LF_DF_year <- data.frame(t(LF$data$obs)) %>% mutate(Year=year) # 1 obs
-#   
-#   if(year==134) LF_DF0 <- LF_DF_year
-#   else LF_DF0 <- rbind(LF_DF0,LF_DF_year)                                 
-# }
-# 
-# names(LF_DF0)[1] <- "LatLon"
-# names(LF_DF0)[2:40] <- LF$data$length_bins[1:39]
-# 
-# LF_DF <- LF_DF0 %>% gather(2:40,key="Length",value = "LF") %>%
-#   mutate(Length=as.numeric(Length),LF=as.numeric(LF)) %>%
-#   separate(LatLon, c("lat", "lon"), "-")
-# 
-# LF_DF <- left_join(left_join(LF_DF,Lat_grid),Lon_grid) %>%
-#   mutate(Lat=as.numeric(levels(Lat))[Lat],Lon=as.numeric(levels(Lon))[Lon])
-# 
-# f3 <- ggplot(data=LF_DF) +
-#   geom_point(aes(x=Lon,y=Lat)) +
-#   facet_wrap(~Year) +
-#   theme_bw()
-# 
-# ggsave(f3, file="Data/Troll_LF.png", width = 10, height = 8)
-# 
-# save(LF_DF, file="Data/Troll_LF.RData")
+
+# Troll LF data
+for (year in 134:255) {
+  # year=210
+  LF <- sim_1$obs[[paste0("simulated_lf_trol_",year)]]
+  
+  if(length(LF$data$obs)>40) LF_DF_year <- data.frame(LF$data$obs) %>% mutate(Year=year) # more than 1 obs
+  if(length(LF$data$obs)==40) LF_DF_year <- data.frame(t(LF$data$obs)) %>% mutate(Year=year) # 1 obs
+  
+  if(year==134) LF_DF0 <- LF_DF_year
+  else LF_DF0 <- rbind(LF_DF0,LF_DF_year)                                 
+}
+
+names(LF_DF0)[1] <- "LatLon"
+names(LF_DF0)[2:40] <- LF$data$length_bins[1:39]
+
+LF_DF <- LF_DF0 %>% gather(2:40,key="Length",value = "LF") %>%
+  mutate(Length=as.numeric(Length),LF=as.numeric(LF)) %>%
+  separate(LatLon, c("lat", "lon"), "-")
+
+LF_DF <- left_join(left_join(LF_DF,Lat_grid),Lon_grid) %>%
+  mutate(Lat=as.numeric(levels(Lat))[Lat],Lon=as.numeric(levels(Lon))[Lon])
+
+f3 <- ggplot(data=LF_DF) +
+  geom_point(aes(x=Lon,y=Lat)) +
+  facet_wrap(~Year) +
+  theme_bw()
+
+ggsave(f3, file="Data/Troll_LF.png", width = 10, height = 8)
+
+save(LF_DF, file="Data/Troll_LF.RData")
+
+
+# PS catch data
+for (year in 1:256) {
+  # year=210
+  Catch <- sim_1$layers[[paste0("layer[fishing_ps_",year,"]")]]
+  
+  Catch_DF_year <- data.frame(Catch = as.numeric(Catch$data[1:(13*17)]),
+                              Lat = rep(Lat_grid$Lat,17),
+                              Lon = rep(Lon_grid$Lon,each=13),
+                              Year = year)
+  
+  if(year==1) Catch_DF <- Catch_DF_year
+  else Catch_DF <- rbind(Catch_DF,Catch_DF_year)                                 
+}
+
+save(Catch_DF, file="Data/PS_Catch.RData")
+
+
+# LL catch data
+for (year in 1:256) {
+  # year=210
+  Catch <- sim_1$layers[[paste0("layer[fishing_ll_",year,"]")]]
+  
+  Catch_DF_year <- data.frame(Catch = as.numeric(Catch$data[1:(13*17)]),
+                              Lat = rep(Lat_grid$Lat,17),
+                              Lon = rep(Lon_grid$Lon,each=13),
+                              Year = year)
+  
+  if(year==1) Catch_DF <- Catch_DF_year
+  else Catch_DF <- rbind(Catch_DF,Catch_DF_year)                                 
+}
+
+save(Catch_DF, file="Data/LL_Catch.RData")
