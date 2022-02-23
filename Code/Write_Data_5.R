@@ -1,7 +1,7 @@
 library(r4ss)
 library(tidyverse)
 
-load("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/YFT_4area_observations_1_100_v2.RData")
+load("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/YFT_4area_observations_1_100_ESS_05.RData")
 
 data <- dat_4A_1
 
@@ -21,7 +21,7 @@ fleetinfo <- rbind(data$fleetinfo[1:16,],llcpue=c(0.5, 1, 3, 0))
 
 # Survey CPUE
 data$CPUEinfo <- data$CPUEinfo[1:17,]
-CPUE <- read.csv("Data/VAST_Index/Table_for_SS3.csv")
+CPUE <- read.csv("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/VAST_Index/VAST_Index/Table_for_SS3.csv")
 CPUE$Fleet <- 17
 CPUE$SD_log <- CPUE$SD_log + 0.2 - mean(CPUE$SD_log)
 data$CPUE <- CPUE[,1:5]
@@ -88,23 +88,27 @@ data$do_tags <- 0
 
 
 # # write data file
-SS_writedat(data,outfile = "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/test1/test_data.ss",version = "3.24",overwrite = TRUE)
+SS_writedat(data,outfile = "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/test1_5/test_data.ss",version = "3.24",overwrite = TRUE)
 
 # fix a bug in r4ss
-File <- readLines("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/test1/test_data.ss", warn = F)
+File <- readLines("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/test1_5/test_data.ss", warn = F)
 File[19] = "1 #_Nsexes"
 
+# turn off comp tail compression
+File[492] = "-1"
+File[493] = "1e-9"
+
 # Survey LF
-SS_LF <- read.csv(file="D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/VAST_LF/SS.csv")
+SS_LF <- read.csv(file="D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/VAST_LF/VAST_LF/SS.csv")
 # SS_LF$Nsamp <- 5
 Line <- match("0 #_N_sizefreq_methods", File)
 File[Line] = 1 # N WtFreq methods to read
-File[Line+1] = 13 # nbins per method
+File[Line+1] = 12 # nbins per method
 File[Line+2] = 2 # units per each method
 File[Line+3] = 3 # scale per each method
-File[Line+4] = 0.0001 # mincomp to add to each obs (entry for each method)
+File[Line+4] = 0.000001 # mincomp to add to each obs (entry for each method)
 File[Line+5] = nrow(SS_LF) # Number of observations per method 
-File[Line+6] = paste0(gsub(", "," ",toString(seq(40,160,10)))) # size bins
+File[Line+6] = paste0(gsub(", "," ",toString(seq(50,160,10)))) # size bins
 for (l in 1:nrow(SS_LF)) {
   File[Line+6+l] <- paste0(gsub(", "," ",toString(SS_LF[l,])))
 }
@@ -114,4 +118,4 @@ File[Line+8+nrow(SS_LF)] = 0 # no morphcomp data
 File[Line+9+nrow(SS_LF)] = 999
 File[Line+10+nrow(SS_LF)] = "ENDDATA"
 
-writeLines(File, "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/test1/test_data.ss")
+writeLines(File, "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/test1_5/test_data.ss")

@@ -1,8 +1,8 @@
 library(VAST)
 library(tidyverse)
 
-load("C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/CPUE.RData")
-load("C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/LL_LF.RData")
+load("C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/CPUE_25.RData")
+load("C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/LL_LF_25.RData")
 
 LF_DF <- LF_DF %>% group_by(Year,Lat,Lon) %>%
   mutate(tot=sum(LF)) %>% filter(tot>0)
@@ -10,8 +10,8 @@ LF_DF <- LF_DF %>% group_by(Year,Lat,Lon) %>%
 Data <- left_join(LF_DF,Data_Geostat) %>%
   rename(Catch_KG2=Catch_KG) %>%
   mutate(Catch_KG=Catch_KG2*LF) %>% na.omit() %>%
-  filter(Lon %in% c(37.5,102.5) == FALSE) %>%
-  mutate(spp=ifelse(floor(Length/10)*10<150,floor(Length/10)*10,150)) %>%
+  # filter(Lon %in% c(37.5,102.5) == FALSE) %>%
+  mutate(spp=ifelse(Length>160,160,floor(Length/10)*10)) %>%
   # mutate(spp=Length) %>%
   group_by(Year,Lat,Lon,spp) %>% summarise(Catch_KG=sum(Catch_KG)) %>%
   data.frame()
@@ -19,9 +19,9 @@ Data <- left_join(LF_DF,Data_Geostat) %>%
 ggplot(Data) +
   geom_point(aes(x=Year,y=spp,color=Catch_KG>0))
 
-ggplot(Nsamp) +
-  geom_point(aes(x=Lon,y=Lat)) +
-  facet_wrap(~Year)
+# ggplot(Nsamp) +
+#   geom_point(aes(x=Lon,y=Lat)) +
+#   facet_wrap(~Year)
 
 Data_all <- Data %>%
   group_by(Year,spp) %>%
@@ -37,25 +37,26 @@ Data <- Data %>% filter(spp>30)
 
 settings = make_settings( n_x=10, Region="Other", purpose="index2",max_cells=Inf,use_anisotropy=FALSE,
                           strata.limits=data.frame('STRATA'=c("IO")), bias.correct=FALSE, ObsModel=c(1,3),
-                          fine_scale = FALSE)
+                          fine_scale = TRUE)
 
 # settings$ObsModel = c(1,3)
 # settings$use_anisotropy = FALSE
 settings$Options[['treat_nonencounter_as_zero']] = TRUE
 
-dir.create("C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/VAST_LF/")
-setwd("C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/VAST_LF/")
+dir <- "C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/VAST_LF/VAST_LF_25/"
+dir.create(dir)
+setwd(dir)
 
 Nsamp <- left_join(LF_DF,Data_Geostat) %>%
   rename(Catch_KG2=Catch_KG) %>%
   mutate(Catch_KG=Catch_KG2*LF) %>% na.omit() %>%
-  filter(Lon %in% c(37.5,102.5) == FALSE) %>%
+  # filter(Lon %in% c(37.5,102.5) == FALSE) %>%
   # mutate(LL=(lat,lon)) %>%
   # mutate(spp=Length) %>%
   group_by(Year) %>% summarise(N=length(unique(paste0(lat,lon)))) %>%
   data.frame()
 
-write.csv(Nsamp,file="C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/VAST_LF/Nsamp.csv",row.names = FALSE)
+write.csv(Nsamp,file=paste0(dir,"Nsamp.csv"),row.names = FALSE)
 
 fit = fit_model( settings = settings,
                  Lat_i = Data[,'Lat'],
@@ -67,8 +68,9 @@ fit = fit_model( settings = settings,
                  Npool = 1000000,
                  newtonsteps = 1,
                  test_fit = FALSE,
-                 working_dir="C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/VAST_LF/",
+                 working_dir=dir,
                  grid_dim_km = c(50,50),
                  observations_LL=Data[,c('Lat','Lon')])
 
-# Results = plot_results(settings=settings, fit=fit)
+Results = plot_results(settings=settings, fit=fit)
+save.image(file="all.RData")

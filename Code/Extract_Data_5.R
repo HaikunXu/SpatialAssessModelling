@@ -8,7 +8,8 @@ Lat_grid <- data.frame("lat" = paste0("r",as.character(seq(1,13))),
 Lon_grid <- data.frame("lon" = paste0("c",as.character(seq(1,17))),
                        "Lon" = sim_1$layers$`layer[longitude]`$data[1,])
 
-load("Data/sim_1_v2.RData")
+# load("Data/sim_1_v2.RData")
+load("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/YFT_221cell_observations_1-100_ESS_05.RData")
 
 # LL CPUE data
 for (year in 81:256) {
@@ -31,9 +32,9 @@ f0 <- ggplot(data=Data_Geostat) +
   facet_wrap(~Year) +
   theme_bw()
 
-ggsave(f0,file="Data/CPUE.png", width = 24, height = 16)
+ggsave(f0,file="Data/CPUE_5.png", width = 24, height = 16)
 
-save(Data_Geostat,file="Data/CPUE.RData")
+save(Data_Geostat,file="Data/CPUE_5.RData")
 
 # LL LF data
 for (year in 9:238) {
@@ -68,9 +69,9 @@ f1 <- ggplot(data=LF_DF) +
   # facet_wrap(~Year) +
   theme_bw(12)
 
-ggsave(f1,file="Data/LL_LF.png", width = 10, height = 8)
+ggsave(f1,file="Data/LL_LF_5.png", width = 10, height = 8)
 
-save(LF_DF,file="Data/LL_LF.RData")
+save(LF_DF,file="Data/LL_LF_5.RData")
 
 # nominal LL LF
 Data <- LF_DF0 %>% gather(2:40,key="Length",value = "LF") %>%
@@ -80,13 +81,13 @@ Data <- LF_DF0 %>% gather(2:40,key="Length",value = "LF") %>%
   spread(Length,LF)
 
 size <- LF_DF0 %>% group_by(Year) %>%
-  summarise(n=length(unique(LatLon)))
+  summarise(n=length(unique(LatLon))*5)
 
 Data <- left_join(Data,size)
 
-LL_LF <- cbind(Data$Year,1,17,0,0,Data$n,Data[,2:40]) %>% data.frame()
+LL_LF <- cbind(1,Data$Year,1,17,0,0,Data$n,Data[,2:40]) %>% data.frame()
 
-write.csv(LL_LF,file="Data/LL_LF_Nominal.csv",row.names = FALSE)
+write.csv(LL_LF,file="Data/LL_LF_Nominal_5.csv",row.names = FALSE)
 
 
 # PS LF data
@@ -121,9 +122,9 @@ f2 <- ggplot(data=LF_DF) +
   # facet_wrap(~Year) +
   theme_bw()
 
-ggsave(f2, file="Data/PS_LF.png", width = 10, height = 8)
+ggsave(f2, file="Data/PS_LF_5.png", width = 10, height = 8)
 
-save(LF_DF, file="Data/PS_LF.RData")
+save(LF_DF, file="Data/PS_LF_5.RData")
 
 
 # # Troll LF data
@@ -156,37 +157,37 @@ save(LF_DF, file="Data/PS_LF.RData")
 # ggsave(f3, file="Data/Troll_LF.png", width = 10, height = 8)
 # 
 # save(LF_DF, file="Data/Troll_LF.RData")
-# 
-# 
-# # PS catch data
-# for (year in 1:256) {
-#   # year=210
-#   Catch <- sim_1$layers[[paste0("layer[fishing_ps_",year,"]")]]
-#   
-#   Catch_DF_year <- data.frame(Catch = as.numeric(Catch$data[1:(13*17)]),
-#                               Lat = rep(Lat_grid$Lat,17),
-#                               Lon = rep(Lon_grid$Lon,each=13),
-#                               Year = year)
-#   
-#   if(year==1) Catch_DF <- Catch_DF_year
-#   else Catch_DF <- rbind(Catch_DF,Catch_DF_year)                                 
-# }
-# 
-# save(Catch_DF, file="Data/PS_Catch.RData")
-# 
-# 
-# # LL catch data
-# for (year in 1:256) {
-#   # year=210
-#   Catch <- sim_1$layers[[paste0("layer[fishing_ll_",year,"]")]]
-#   
-#   Catch_DF_year <- data.frame(Catch = as.numeric(Catch$data[1:(13*17)]),
-#                               Lat = rep(Lat_grid$Lat,17),
-#                               Lon = rep(Lon_grid$Lon,each=13),
-#                               Year = year)
-#   
-#   if(year==1) Catch_DF <- Catch_DF_year
-#   else Catch_DF <- rbind(Catch_DF,Catch_DF_year)                                 
-# }
-# 
-# save(Catch_DF, file="Data/LL_Catch.RData")
+ 
+
+# PS catch data
+for (year in 1:256) {
+  # year=210
+  Catch <- sim_1$layers[[paste0("layer[fishing_ps_",year,"]")]]
+
+  Catch_DF_year <- data.frame(Catch = as.numeric(Catch$data[1:(13*17)]),
+                              Lat = rep(Lat_grid$Lat,17),
+                              Lon = rep(Lon_grid$Lon,each=13),
+                              Year = year)
+
+  if(year==1) Catch_DF <- Catch_DF_year
+  else Catch_DF <- rbind(Catch_DF,Catch_DF_year)
+}
+
+save(Catch_DF, file="Data/PS_Catch_5.RData")
+
+
+# LL catch data
+for (year in 1:256) {
+  # year=210
+  Catch <- sim_1$layers[[paste0("layer[fishing_ll_",year,"]")]]
+
+  Catch_DF_year <- data.frame(Catch = as.numeric(Catch$data[1:(13*17)]),
+                              Lat = rep(Lat_grid$Lat,17),
+                              Lon = rep(Lon_grid$Lon,each=13),
+                              Year = year)
+
+  if(year==1) Catch_DF <- Catch_DF_year
+  else Catch_DF <- rbind(Catch_DF,Catch_DF_year)
+}
+
+save(Catch_DF, file="Data/LL_Catch_5.RData")
