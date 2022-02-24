@@ -2,7 +2,7 @@ library(tidyverse)
 
 data <- read.csv("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/VAST_LF/VAST_LF_25/Table_for_SS3.csv")
 
-LF <- data %>% mutate(Length=Category*10+40) %>%
+LF <- data %>% mutate(Length=Category*10+30) %>%
   group_by(Year) %>% mutate(Index=sum(Estimate_metric_tons)) %>%
   filter(Index>0) %>%
   mutate(LF=Estimate_metric_tons/Index) %>%

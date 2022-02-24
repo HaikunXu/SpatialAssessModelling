@@ -10,8 +10,8 @@ names(Nominal) <- c("Year",seq(10,195,5))
 Nominal_long <- Nominal %>%
   gather(2:39,key="Length",value="lf") %>%
   mutate(Length=as.numeric(Length)) %>%
-  mutate(Length=ifelse(Length>170,170,floor(Length/10)*10)) %>%
-  filter(Year>80,Length>40) %>%
+  mutate(Length=ifelse(Length>160,160,floor(Length/10)*10)) %>%
+  filter(Year>80,Length>30) %>%
   group_by(Year,Length) %>%
   summarise(lf=sum(lf)) %>%
   group_by(Year) %>%
@@ -33,7 +33,7 @@ ggplot(data = Nominal_mean) +
 VAST <- read.csv("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/VAST_LF/VAST_LF_25/SS.csv")
 
 VAST <- VAST[,c(2,8:20)]
-names(VAST) <- c("Year",seq(50,170,10))  
+names(VAST) <- c("Year",seq(40,160,10))  
 
 VAST_long <- VAST %>%
   gather(2:14,key="Length",value="LF") %>%
@@ -54,13 +54,13 @@ ggplot() +
   ggtitle("Red: VAST; Blue: Nominal")
 
 
+# # 
+# Nominal_long$Model <- "Nominal"
+# VAST_long$Model <- "VAST"
 # 
-Nominal_long$Model <- "Nominal"
-VAST_long$Model <- "VAST"
-
-All <- rbind(Nominal_long[,c(1,2,4,5)],VAST_long)
-
-ggplot(data=All) +
-  geom_line(aes(x=Length,y=LF,color=Model)) +
-  facet_wrap(~Year) +
-  theme_bw()
+# All <- rbind(Nominal_long[,c(1,2,4,5)],VAST_long)
+# 
+# ggplot(data=All) +
+#   geom_line(aes(x=Length,y=LF,color=Model)) +
+#   facet_wrap(~Year) +
+#   theme_bw()
