@@ -1,8 +1,8 @@
 library(VAST)
 library(tidyverse)
 
-load("C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/CPUE_25.RData")
-load("C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/LL_LF_25.RData")
+load("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/CPUE_0.RData")
+load("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/LL_LF_0.RData")
 
 LF_DF <- LF_DF %>% arrange(Lat,Lon,Year) %>%
   group_by(Year,Lat,Lon) %>%
@@ -37,7 +37,7 @@ settings = make_settings( n_x=10, Region="Other", purpose="index2",max_cells=Inf
 # settings$use_anisotropy = FALSE
 settings$Options[['treat_nonencounter_as_zero']] = TRUE
 
-dir <- "C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/VAST_LF/VAST_LF_25/"
+dir <- "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/VAST_LF/VAST_LF_0/"
 dir.create(dir)
 setwd(dir)
 
