@@ -13,7 +13,7 @@ ggplot(data=CPUE) +
   geom_line(aes(x=Year,y=cpue)) +
   theme_bw()
 
-settings = make_settings( n_x=150, Region="Other", purpose="index2",max_cells=Inf,use_anisotropy=FALSE,
+settings = make_settings( n_x=120, Region="Other", purpose="index2",max_cells=Inf,use_anisotropy=FALSE,
                           strata.limits=data.frame('STRATA'=c("IO")), bias.correct=FALSE, ObsModel=c(1,3),
                           RhoConfig=c("Beta1"=0, "Beta2"=0, "Epsilon1"=0, "Epsilon2"=0) )
 
@@ -33,4 +33,3 @@ fit_yft = fit_model( "settings"=settings, "Lat_i"=Data_Geostat[,'Lat'],
 # save(fit_orig, file=paste0(working_dir,"Sim1/fit_orig.RData"))
 Results = plot_results(settings=settings, fit=fit_yft)
 plot(fit_yft)
-save.image(file="all.RData")

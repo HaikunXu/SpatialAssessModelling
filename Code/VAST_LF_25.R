@@ -4,15 +4,16 @@ library(tidyverse)
 load("C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/CPUE_25.RData")
 load("C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/LL_LF_25.RData")
 
-LF_DF <- LF_DF %>% arrange(Lat,Lon,Year) %>%
-  group_by(Year,Lat,Lon) %>%
-  mutate(tot=sum(LF)) %>% filter(tot>0) # remove all-0 rows
+LF_DF <- LF_DF %>% group_by(Year,Lat,Lon) %>%
+  mutate(tot=sum(LF)) %>% filter(tot>0)
 
 Data <- left_join(LF_DF,Data_Geostat) %>%
   rename(Catch_KG2=Catch_KG) %>%
   mutate(Catch_KG=Catch_KG2*LF) %>% na.omit() %>%
   # filter(Lon %in% c(37.5,102.5) == FALSE) %>%
-  mutate(spp=ifelse(Length>180,180,floor(Length/10)*10)) %>%
+  mutate(spp=ifelse(Length>160,160,
+                    ifelse(Length<30,30,
+                           floor(Length/10)*10))) %>%
   # mutate(spp=Length) %>%
   group_by(Year,Lat,Lon,spp) %>% summarise(Catch_KG=sum(Catch_KG)) %>%
   data.frame()
@@ -27,7 +28,7 @@ ggplot(Data) +
 Data$Vessel <- "NA"
 Data$AreaSwept_km2 <- 1
 
-Data <- Data %>% filter(spp>10)
+# Data <- Data %>% filter(spp>30)
 
 settings = make_settings( n_x=10, Region="Other", purpose="index2",max_cells=Inf,use_anisotropy=FALSE,
                           strata.limits=data.frame('STRATA'=c("IO")), bias.correct=FALSE, ObsModel=c(1,3),
