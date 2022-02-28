@@ -11,7 +11,7 @@ Data <- left_join(LF_DF,Data_Geostat) %>%
   rename(Catch_KG2=Catch_KG) %>%
   mutate(Catch_KG=Catch_KG2*LF) %>% na.omit() %>%
   # filter(Lon %in% c(37.5,102.5) == FALSE) %>%
-  mutate(spp=ifelse(Length>170,170,floor(Length/10)*10)) %>%
+  mutate(spp=ifelse(Length>160,160,floor(Length/10)*10)) %>%
   # mutate(spp=Length) %>%
   group_by(Year,Lat,Lon,spp) %>% summarise(Catch_KG=sum(Catch_KG)) %>%
   data.frame()
@@ -33,11 +33,11 @@ Data_all <- Data %>%
 Data$Vessel <- "NA"
 Data$AreaSwept_km2 <- 1
 
-Data <- Data %>% filter(spp>40)
+Data <- Data %>% filter(spp>30)
 
-settings = make_settings( n_x=12, Region="Other", purpose="index2",max_cells=Inf,use_anisotropy=FALSE,
+settings = make_settings( n_x=10, Region="Other", purpose="index2",max_cells=Inf,use_anisotropy=FALSE,
                           strata.limits=data.frame('STRATA'=c("IO")), bias.correct=FALSE, ObsModel=c(1,3),
-                          fine_scale = TRUE)
+                          fine_scale = FALSE)
 
 # settings$ObsModel = c(1,3)
 # settings$use_anisotropy = FALSE
@@ -66,7 +66,7 @@ fit = fit_model( settings = settings,
                  b_i = Data[,'Catch_KG'],
                  a_i = Data[,'AreaSwept_km2'],
                  Npool = 1000000,
-                 newtonsteps = 1,
+                 newtonsteps = 2,
                  test_fit = FALSE,
                  working_dir=dir,
                  grid_dim_km = c(50,50),
