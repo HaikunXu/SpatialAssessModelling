@@ -43,7 +43,6 @@ save_dir <- "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Da
 LF_Loop <- loop_regression_tree(LF,fcol,lcol,bins,Nsplit,save_dir,select_matrix = my_select_matrix)
 make.split.map(LF_Loop$LF_Tree$LF,Nsplit,save_dir)
 
-ggsave(file=paste0(save_dir,"Trees_25.png"), width = 10, height = 8)
 
 # load LL catch data
 load("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/LL_Catch_25.RData")
@@ -73,6 +72,8 @@ select <- as.numeric(LF_Loop$Imp_DF_sorted[1,1:Nsplit])
 LF_Tree <- run_regression_tree(LF_new,fcol,lcol,bins,Nsplit,save_dir,manual=TRUE,select=select,include_dummy = TRUE)
 make.split.map(LF_Tree$LF,Nsplit,save_dir)
 
+ggsave(file=paste0(save_dir,"Trees_25.png"), width = 10, height = 8)
+
 # extract catch flag derived from the regression tree package
 Cell <- LF_Tree$LF$Flag3[which(LF_Tree$LF$dummy == TRUE)]
 
@@ -101,8 +102,8 @@ Catch$lon <- as.numeric(levels(Catch$lon))[Catch$lon]
 
 Catch_cell <- cbind(Catch, Cell)
 LF_raw_cell <- left_join(LF_raw,Catch_cell) %>%
-  mutate(LF_raised = LF * Catch) %>%
-  # mutate(LF_raised = LF) %>%
+  # mutate(LF_raised = LF * Catch) %>%
+  mutate(LF_raised = LF) %>%
   select(year,quarter,lat,lon,Cell,Length,LF_raised)
 
 # combine the flag with catch data and then group catch
