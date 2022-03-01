@@ -102,6 +102,8 @@ Catch$lat <- as.numeric(levels(Catch$lat))[Catch$lat]
 Catch$lon <- as.numeric(levels(Catch$lon))[Catch$lon]
 
 Catch_cell <- cbind(Catch, Cell)
+
+# sample weighted
 LF_raw_cell <- left_join(LF_raw,Catch_cell) %>%
   # mutate(LF_raised = LF * Catch) %>% # catch weighted
   mutate(LF_raised = LF) %>%
@@ -119,6 +121,27 @@ LF_Fishery <- LF_raw_cell %>%
   spread(Length,lf)
 
 write.csv(LF_Fishery,file=paste0(save_dir,"PS_LF_25.csv"),row.names = FALSE)
+
+
+# catch weighted
+LF_raw_cell <- left_join(LF_raw,Catch_cell) %>%
+  mutate(LF_raised = LF * Catch) %>% # catch weighted
+  # mutate(LF_raised = LF) %>%
+  select(year,quarter,lat,lon,Cell,Length,LF_raised)
+
+# combine the flag with catch data and then group catch
+LF_Fishery <- LF_raw_cell %>%
+  group_by(Cell,year,quarter,Length) %>%
+  summarise(lf_raised=sum(LF_raised)) %>%
+  group_by(Cell,year,quarter) %>%
+  mutate(lf_sum=sum(lf_raised)) %>%
+  filter(lf_sum > 0) %>%
+  mutate(lf=lf_raised/lf_sum) %>%
+  select(Cell,year,quarter,Length,lf) %>%
+  spread(Length,lf)
+
+write.csv(LF_Fishery,file=paste0(save_dir,"PS_LF_25_cw.csv"),row.names = FALSE)
+
 
 
 # # catch-weighted tree
