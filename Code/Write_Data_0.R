@@ -1,7 +1,7 @@
 library(r4ss)
 library(tidyverse)
 
-load("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/YFT_4area_observations_1_100_ESS_00.RData")
+load("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/YFT_4area_observations_1_100_ESS_00x.RData")
 
 data <- dat_4A_1
 

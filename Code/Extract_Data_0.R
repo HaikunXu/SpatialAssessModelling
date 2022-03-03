@@ -10,7 +10,7 @@ Lon_grid <- data.frame("lon" = paste0("c",as.character(seq(1,17))),
 
 rm(sim_1)
 # load("Data/sim_1_v2.RData")
-load("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/YFT_221cell_observations_1-100_ESS_00.RData")
+load("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/YFT_221cell_observations_1-100_ESS_00x.RData")
 
 # sim_1 <- sim_11
 # LL CPUE data
