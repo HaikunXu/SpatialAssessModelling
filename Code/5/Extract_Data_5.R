@@ -29,7 +29,7 @@ Data_Geostat <- left_join(left_join(Data_Geostat,Lat_grid),Lon_grid) %>%
   mutate(Lat=as.numeric(levels(Lat))[Lat],Lon=as.numeric(levels(Lon))[Lon])
 
 f0 <- ggplot(data=Data_Geostat) +
-  geom_point(aes(x=Lon,y=Lat)) +
+  geom_point(aes(x=Lon,y=Lat,color=Catch_KG>0)) +
   facet_wrap(~Year) +
   theme_bw()
 
@@ -67,12 +67,13 @@ LF_DF <- left_join(left_join(LF_DF,Lat_grid),Lon_grid) %>%
 
 f1 <- ggplot(data=LF_DF) +
   geom_point(aes(x=Lon,y=Lat)) +
-  # facet_wrap(~Year) +
+  facet_wrap(~Year) +
   theme_bw(12)
 
-ggsave(f1,file="Data/LL_LF_5.png", width = 10, height = 8)
+ggsave(f1,file="Data/LL_LF_5.png", width = 20, height = 20)
 
 save(LF_DF,file="Data/LL_LF_5.RData")
+
 
 # nominal LL LF
 Data <- LF_DF0 %>% gather(2:40,key="Length",value = "LF") %>%
@@ -192,3 +193,16 @@ for (year in 1:256) {
 }
 
 save(Catch_DF, file="Data/LL_Catch_5.RData")
+
+
+###
+Catch_DF <- Catch_DF %>%
+  mutate(Lat=as.numeric(levels(Lat))[Lat],Lon=as.numeric(levels(Lon))[Lon])
+
+f <- ggplot() +
+  geom_point(aes(x=Lon,y=Lat),shape=2,data=LF_DF %>% filter(Year>80)) +
+  geom_point(aes(x=Lon,y=Lat,color=Catch_KG>0),data=Data_Geostat) +
+  geom_point(aes(x=Lon,y=Lat),shape=3,data=Catch_DF %>% filter(Year>80,Catch>0)) +
+  facet_wrap(~Year) +
+  theme_bw(12)
+ggsave(f,file="Data/LL_all_5.png", width = 20, height = 20)

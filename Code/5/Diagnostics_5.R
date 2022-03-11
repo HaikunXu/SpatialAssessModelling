@@ -2,24 +2,29 @@ library(r4ss)
 library(IATTCassessment)
 library(ss3diags)
 
-dir <- "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/test1_5/"
+dir <- "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/test1_5_rt_cw/"
 setwd(dir)
 
 Rep = SS_output(dir=dir,ncols=400,covar=F,verbose = FALSE, printstats = FALSE)
 
 #runs_test
-# rt = SSplotRunstest(Rep, add = T, legendcex = 0.8, verbose = F)
+SSplotRunstest(Rep, add = T, verbose = F)
+ggsave(file = "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/diagnostics/Index.png", width = 6, height = 6)
 
+sspar(mfrow = c(4, 4), plot.cex = 0.8)
+SSplotRunstest(Rep, add = T, subplot = "len", verbose = F)
+
+# Ro profile
 Path <- "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/diagnostics/R0/"
 R0 <- seq(10.85,12.05,0.3)
 
 N = length(R0)
 comps <- c(1:17)
 NLL_a <- data.frame("Total"=rep(NA,N),
-                    "Indices"=rep(NA,N),
+                    "Index"=rep(NA,N),
                     "Fcomps"=rep(NA,N),
-                    "Scomps"=rep(NA,N),
-                    "Recruits"=rep(NA,N),
+                    "Icomps"=rep(NA,N),
+                    "Recruit"=rep(NA,N),
                     "R0"=R0)
 
 NLL_comp <- data.frame("R0"=R0)
@@ -31,23 +36,24 @@ for (n in 1:N) {
   
   NLL_temp <- myreplist$likelihoods_by_fleet
   for(c in 1:length(comps)) {
-    if(comps[c]<24) NLL_comp[n,c+1] <- NLL_temp[NLL_temp$Label=="Length_like",comps[c]+2]
+    if(comps[c]<17) NLL_comp[n,c+1] <- NLL_temp[NLL_temp$Label=="Length_like",comps[c]+2]
     else NLL_comp[n,c+1] <- NLL_temp[NLL_temp$Label=="SizeFreq_like:_1",comps[c]+2]
   }
 }
 
 names(NLL_comp)[2:(length(comps)+1)] <- names(NLL_temp)[comps+2]
-NLL_amin <- NLL_a %>% gather(Total,Indices,Fcomps,Scomps,Recruits,value="nll",key="Component") %>%
+NLL_amin <- NLL_a %>% gather(Total,Index,Fcomps,Icomps,Recruit,value="nll",key="Component") %>%
   group_by(Component) %>% mutate(NLL=nll-min(nll))
 
 ggplot() +
   geom_line(aes(x=R0,y=NLL,color=Component),data=NLL_amin,size=1) +
   geom_point(aes(x=R0,y=NLL,color=Component,shape=Component),data=NLL_amin,size=3) +
-  theme_bw(20) +
-  xlab("") +
-  ylab("")
+  theme_bw(12) +
+  geom_vline(xintercept = 11.48505,linetype="dashed") +
+  xlab("ln(R0)") +
+  ylab("NLL")
 
-# ggsave(f_all, file = paste0(Path, "R0.png"), width = 6, height = 6)
+ggsave(file = paste0(Path, "R0.png"), width = 8, height = 6)
 
 
 # ASPM
@@ -60,9 +66,45 @@ Rep2 = SS_output(dir=Path2,ncols=400,covar=T)
 Path3 <- "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/diagnostics/ASPM - R/"
 Rep3 = SS_output(dir=Path3,ncols=400,covar=T)
 
-Path4 <- "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/diagnostics/CCA/"
+# Path4 <- "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/diagnostics/CCA/"
+# Rep4 = SS_output(dir=Path4,ncols=400,covar=T)
+
+SSplotComparisons(SSsummarize(list(Rep1,Rep2,Rep3)), subplot=1:50,
+                  legendlabels=c("Model3","ASPM","ASPM_Rdev"), btarg=0, minbthresh=0,
+                  plotdir = 'D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/diagnostics/ASPM/', print = TRUE)
+
+
+# retro
+Path1 <- "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/diagnostics/Retro/0/"
+Rep1 = SS_output(dir=Path1,ncols=400,covar=T)
+
+Path2 <- "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/diagnostics/Retro/4/"
+Rep2 = SS_output(dir=Path2,ncols=400,covar=T)
+
+Path3 <- "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/diagnostics/Retro/8/"
+Rep3 = SS_output(dir=Path3,ncols=400,covar=T)
+
+Path4 <- "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/diagnostics/Retro/12/"
 Rep4 = SS_output(dir=Path4,ncols=400,covar=T)
 
-SSplotComparisons(SSsummarize(list(Rep1,Rep2,Rep3,Rep4)), subplot=1:50,
-                  legendlabels=c("Model3","ASPM","ASPM_Rdev","CCA"), btarg=0, minbthresh=0,
-                  plotdir = 'D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/diagnostics/ASPM/', print = TRUE)
+Path5 <- "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/diagnostics/Retro/16/"
+Rep5 = SS_output(dir=Path5,ncols=400,covar=T)
+
+Path6 <- "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/diagnostics/Retro/20/"
+Rep6 = SS_output(dir=Path6,ncols=400,covar=T)
+
+endyrvec <- Rep1$endyrs + seq(0,-20,-4)
+
+SSplotComparisons(SSsummarize(list(Rep1,Rep2,Rep3,Rep4,Rep5,Rep6)), subplot=1:50,
+                  legendlabels=c("0","-4","-8","-12","-16","-20"),
+                  endyrvec=endyrvec,
+                  btarg=0, minbthresh=0,
+                  plotdir = 'D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/diagnostics/Retro/', print = TRUE)
+
+
+
+retroModels <- SSgetoutput(dirvec=file.path(Path,paste("retro",seq(0,20,4),sep="")))
+retroSummary <- SSsummarize(retroModels)
+endyrvec <- retroSummary$endyrs + seq(0,-20,-4)
+SSplotComparisons(retroSummary, endyrvec=endyrvec, legendlabels=paste("Data",seq(0,-20,-4),"years"),
+                  plot = FALSE, print = TRUE, plotdir = RetroPath)
