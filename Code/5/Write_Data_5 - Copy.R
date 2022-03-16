@@ -45,18 +45,18 @@ PS_Catch <- PS_Catch %>%
   spread(Cell,Total_Catch)
 Catch[,11:13] <- PS_Catch[3:5] / 1000
 
-# LL_Catch <- read.csv("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Tree/LL/LL_Catch_5.csv")
-# LL_Catch <- LL_Catch %>%
-#   spread(Cell,Total_Catch)
-# Catch[,4:7] <- LL_Catch[3:6] / 1000
-# 
+LL_Catch <- read.csv("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Tree/LL/LL_Catch_5.csv")
+LL_Catch <- LL_Catch %>%
+  spread(Cell,Total_Catch)
+Catch[,4:7] <- LL_Catch[3:6] / 1000
+
 data$catch <- Catch
 
 # LF
 LF0 <- data$lencomp
 # remove old PS and LL LF (fleet 4-7, 11-13)
-# LF0 <- LF0[which(LF0$FltSvy %in% c(1:3,8:10,14:17)),]
-LF0 <- LF0[which(LF0$FltSvy %in% c(1:10,14:17)),]
+LF0 <- LF0[which(LF0$FltSvy %in% c(1:3,8:10,14:17)),]
+# LF0 <- LF0[which(LF0$FltSvy %in% c(1:10,14:17)),]
 
 PS_LF <- read.csv("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Tree/PS/PS_LF_5_cw.csv")
 # new PS LF
@@ -69,28 +69,28 @@ PS_LF <- PS_LF %>%
          Nsamp=5)
 PS_LF_new <- PS_LF[,c(43:48,4:42)]
 
-# LL_LF <- read.csv("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Tree/LL/LL_LF_25.csv")
-# # new LL LF
-# LL_LF <- LL_LF %>%
-#   mutate(Yr=(year-1)*4+quarter,
-#          Seas=1,
-#          FltSvy=Cell+3,
-#          Gender=0,
-#          Part=0,
-#          Nsamp=5)
-# LL_LF_new <- LL_LF[,c(43:48,4:42)]
+LL_LF <- read.csv("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Tree/LL/LL_LF_5_cw.csv")
+# new LL LF
+LL_LF <- LL_LF %>%
+  mutate(Yr=(year-1)*4+quarter,
+         Seas=1,
+         FltSvy=Cell+3,
+         Gender=0,
+         Part=0,
+         Nsamp=5)
+LL_LF_new <- LL_LF[,c(43:48,4:42)]
 
 # add new PS anf LL LF
-LF <- rbind(data.matrix(LF0),data.matrix(PS_LF_new)) %>% data.frame()
+LF <- rbind(data.matrix(LF0),data.matrix(PS_LF_new),data.matrix(LL_LF_new)) %>% data.frame()
 names(LF) <- names(LF0)
 data$lencomp <- LF
 data$N_lencomp <- nrow(LF)
 
 # # write data file
-SS_writedat(data,outfile = "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/test1_5_rt_cw/test_data.ss",version = "3.24",overwrite = TRUE)
+SS_writedat(data,outfile = "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/test1_5 - Copy/test_data.ss",version = "3.24",overwrite = TRUE)
 
 # fix a bug in r4ss
-File <- readLines("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/test1_5_rt_cw/test_data.ss", warn = F)
+File <- readLines("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/test1_5 - Copy/test_data.ss", warn = F)
 File[19] = "1 #_Nsexes"
 
 # turn off comp tail compression
@@ -117,4 +117,4 @@ File[Line+8+nrow(SS_LF)] = 0 # no morphcomp data
 File[Line+9+nrow(SS_LF)] = 999
 File[Line+10+nrow(SS_LF)] = "ENDDATA"
 
-writeLines(File, "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/test1_5_rt_cw/test_data.ss")
+writeLines(File, "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/test1_5 - Copy/test_data.ss")

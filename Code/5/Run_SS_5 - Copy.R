@@ -1,6 +1,6 @@
 library(r4ss)
 
-dir <- "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/test1_5/"
+dir <- "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/test1_5 - Copy/"
 setwd(dir)
 
 # run the model with comp weight = 1
@@ -23,15 +23,12 @@ weight <- SSMethod.TA1.8(fit = Rep, type = "size", fleet = 17, plotit = FALSE)
 Francis_size <- round(weight[1],2)
 
 # update weight
+# fix a bug in r4ss
 File <- readLines(paste0(dir,"control.ss_new"), warn = F)
 
 Line <- match("1 #_Variance_adjustments_to_input_values", File)
 
 File[Line+5] = paste0(gsub(", "," ",toString(c(Francis_length,1)))," #_mult_by_lencomp_N") # Francis weight
-
-Line <- match(" 11 1 1 0 1", File)
-File[Line-4] <- "2"
-File[Line+1] <- paste0("6 17 1 ",toString(Francis_size), " 1")
 
 writeLines(File, paste0(dir,"YFT_IO.ctl"))
 

@@ -99,16 +99,16 @@ File[492] = "-1"
 File[493] = "1e-9"
 
 # Survey LF
-SS_LF <- read.csv(file="D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/VAST_LF/VAST_LF_5/SS.csv")
+SS_LF <- read.csv(file="D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/VAST_LF/VAST_LF_5 - Copy/SS.csv")
 # SS_LF$Nsamp <- 5
 Line <- match("0 #_N_sizefreq_methods", File)
 File[Line] = 1 # N WtFreq methods to read
-File[Line+1] = 13 # nbins per method
+File[Line+1] = 14 # nbins per method
 File[Line+2] = 2 # units per each method
 File[Line+3] = 3 # scale per each method
 File[Line+4] = 0.000001 # mincomp to add to each obs (entry for each method)
 File[Line+5] = nrow(SS_LF) # Number of observations per method 
-File[Line+6] = paste0(gsub(", "," ",toString(seq(40,160,10)))) # size bins
+File[Line+6] = paste0(gsub(", "," ",toString(c(-30,seq(40,160,10))))) # size bins
 for (l in 1:nrow(SS_LF)) {
   File[Line+6+l] <- paste0(gsub(", "," ",toString(SS_LF[l,])))
 }
