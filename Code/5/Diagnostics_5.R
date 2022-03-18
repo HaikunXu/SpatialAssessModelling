@@ -102,3 +102,33 @@ retroSummary <- SSsummarize(retroModels)
 endyrvec <- retroSummary$endyrs + seq(0,-20,-4)
 SSplotComparisons(retroSummary, endyrvec=endyrvec, legendlabels=paste("Data",seq(0,-20,-4),"years"),
                   plot = FALSE, print = TRUE, plotdir = "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/diagnostics/Retro/")
+
+
+### selectivity
+replist <- r4ss::SS_output(dir = dir, ncols = 400, covar = T, printstats = F, verbose = FALSE)
+startYr <- replist$startyr
+endYr <- replist$endyr
+numSexes <- replist$nsexes
+numFleets <- replist$nfleets
+SizeSelexDat <- replist$ageselex
+numSizeBins <- replist$nlbins
+SizeBins <- replist$lbinspop
+FleetNames <- replist$FleetNames
+
+FleetNums <- 1:16
+
+SizeSelex <- SizeSelexDat %>% filter(Yr %in% c(startYr),
+                                     Fleet %in% FleetNums,
+                                     Factor=="Asel")
+SizeSelex$FLeet_Names <- FleetNames[SizeSelex$Fleet]
+
+SizeSelex_DF <- SizeSelex %>% gather(8:(ncol(SizeSelex)-1),key="Age",value="Selectivity") %>%
+  mutate(Age=as.numeric(Age))
+
+ggplot(data=SizeSelex_DF) +
+  # geom_line(aes(x=Length,y=Selectivity,color=Time)) +
+  geom_line(aes(x=Age,y=Selectivity)) +
+  facet_wrap(~FLeet_Names) +
+  theme_bw(15)
+
+ggsave(file = paste0(dir, "selex.png"), width = 10, height = 10)

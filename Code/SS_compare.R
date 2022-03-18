@@ -17,8 +17,8 @@ Rep3 = SS_output(dir=Path3,ncols=400,covar=T)
 # 
 # Path6 <- "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/test1_25_rt_cw/"
 # Rep6 = SS_output(dir=Path6,ncols=400,covar=T)
-# 
-# Path7 <- "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/test1_5 - Copy/"
+# # 
+# Path7 <- "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/test1_5_rt - Copy/"
 # Rep7 = SS_output(dir=Path7,ncols=400,covar=T)
 
 

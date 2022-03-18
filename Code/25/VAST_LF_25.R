@@ -1,19 +1,28 @@
 library(VAST)
 library(tidyverse)
 
-load("C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/CPUE_25.RData")
-load("C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/LL_LF_25.RData")
+load("C:/users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/CPUE_25.RData")
+load("C:/users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/LL_LF_25.RData")
 
-LF_DF <- LF_DF %>% arrange(Lat,Lon,Year) %>%
+LF_DF <- LF_DF %>% group_by(Year,Lat,Lon) %>%
+  mutate(tot=sum(LF)) %>% filter(tot>0)
+
+Data_Geostat2 <- Data_Geostat %>%
+  mutate(Lat=floor(Lat/10)*10+7.5,
+         Lon=floor(Lon/20)*20+12.5) %>%
   group_by(Year,Lat,Lon) %>%
-  mutate(tot=sum(LF)) %>% filter(tot>0) # remove all-0 rows
+  summarise(Catch_KG=mean(Catch_KG))
 
-Data <- left_join(LF_DF,Data_Geostat) %>%
+ggplot() +
+  geom_point(aes(x=Lon,y=Lat),shape=2,data=Data_Geostat2) +
+  geom_point(aes(x=Lon,y=Lat),shape=3,color="red",data=LF_DF)
+
+Data <- left_join(LF_DF,Data_Geostat2) %>%
   rename(Catch_KG2=Catch_KG) %>%
   mutate(Catch_KG=Catch_KG2*LF) %>% na.omit() %>%
   # filter(Lon %in% c(37.5,102.5) == FALSE) %>%
-  mutate(spp=ifelse(Length>170,170,floor(Length/10)*10)) %>%
-  # mutate(spp=Length) %>%
+  mutate(spp=ifelse(Length>160,160,
+                    ifelse(Length<30,30,floor(Length/10)*10))) %>%
   group_by(Year,Lat,Lon,spp) %>% summarise(Catch_KG=sum(Catch_KG)) %>%
   data.frame()
 
@@ -24,10 +33,17 @@ ggplot(Data) +
 #   geom_point(aes(x=Lon,y=Lat)) +
 #   facet_wrap(~Year)
 
+# Data_all <- Data %>%
+#   group_by(Year,spp) %>%
+#   summarise(CPUE=mean(Catch_KG))
+
+# ggplot(Data_all %>% filter(spp==80)) +
+#   geom_point(aes(x=Year,y=CPUE))
+
 Data$Vessel <- "NA"
 Data$AreaSwept_km2 <- 1
 
-Data <- Data %>% filter(spp>20)
+# Data <- Data %>% mutate(spp=ifelse(spp>30,spp,30))
 
 settings = make_settings( n_x=10, Region="Other", purpose="index2",max_cells=Inf,use_anisotropy=FALSE,
                           strata.limits=data.frame('STRATA'=c("IO")), bias.correct=FALSE, ObsModel=c(1,3),
@@ -37,11 +53,11 @@ settings = make_settings( n_x=10, Region="Other", purpose="index2",max_cells=Inf
 # settings$use_anisotropy = FALSE
 settings$Options[['treat_nonencounter_as_zero']] = TRUE
 
-dir <- "C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/VAST_LF/VAST_LF_25/"
+dir <- "C:/users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/VAST_LF/VAST_LF_25/"
 dir.create(dir)
 setwd(dir)
 
-Nsamp <- left_join(LF_DF,Data_Geostat) %>%
+Nsamp <- left_join(LF_DF,Data_Geostat2) %>%
   rename(Catch_KG2=Catch_KG) %>%
   mutate(Catch_KG=Catch_KG2*LF) %>% na.omit() %>%
   # filter(Lon %in% c(37.5,102.5) == FALSE) %>%
@@ -60,7 +76,7 @@ fit = fit_model( settings = settings,
                  b_i = Data[,'Catch_KG'],
                  a_i = Data[,'AreaSwept_km2'],
                  Npool = 1000000,
-                 newtonsteps = 2,
+                 newtonsteps = 1,
                  test_fit = FALSE,
                  working_dir=dir,
                  grid_dim_km = c(50,50),

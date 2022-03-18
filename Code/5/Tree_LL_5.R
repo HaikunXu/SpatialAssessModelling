@@ -72,87 +72,115 @@ LF_new$lon <- as.numeric(LF_new$lon)
 
 # ggsave(file=paste0(save_dir,"Trees_5.png"), width = 10, height = 8)
 
-# extract catch flag derived from the regression tree package
-LF_new$Region <- reg(Lat=LF_new$lat,Lon=LF_new$lon)
+# sample size
+LF_raw <- LF_DF %>%
+  select(Year,Lat,Lon,Length,LF) %>%
+  rename(lat=Lat,lon=Lon) %>%
+  group_by(Year,lat,lon) %>%
+  mutate(tot=sum(LF)) %>%
+  filter(tot>0)
 
-Cell <- LF_new$Region[which(LF_new$dummy == TRUE)]
+reg <- function(Lat,Lon) {
+  Region <- rep(2,length(Lat))
+  
+  Region[which(Lat>(-10)&Lon<60)] <- 1
+  Region[which(Lat>(-15)&Lon<75&Lon>60)] <- 1
+  
+  Region[which(Lat>(-15)&Lon>75)] <- 4
+  
+  Region[which(Lat<(-30)&Lon>40)] <- 3
+  Region[which(Lat>(-30)&Lat<(-15)&Lon>60)] <- 3
+  
+  return(Region)
+}
 
-# combine the flag with catch data and then group catch
-Catch_Fishery <- cbind(Catch, Cell) %>%
-  group_by(year,quarter,Cell) %>%
-  summarise(Total_Catch=sum(Catch)) %>%
-  mutate(Cell=factor(Cell))
+LF_raw$Region <- reg(Lat=LF_raw$lat,Lon=LF_raw$lon)
 
-Catch_Fishery_plot <- cbind(Catch, Cell) %>%
-  group_by(year,Cell) %>%
-  summarise(Total_Catch=sum(Catch)) %>%
-  mutate(Cell=factor(Cell))
+N <- LF_raw %>% mutate(Cell=Region) %>%
+  group_by(Cell,Year) %>%
+  summarise(n=length(unique(c(lat,lon))))
 
-ggplot(data=Catch_Fishery_plot) +
-  geom_line(aes(x=year,y=Total_Catch,color=Cell)) +
-  theme_bw()
-
-write.csv(Catch_Fishery,file=paste0(save_dir,"LL_Catch_5.csv"),row.names = FALSE)
+write.csv(N,file=paste0(save_dir,"5_N.csv"),row.names = FALSE)
 
 
-# use the regression tree package to group lf
 
-Catch$lat <- as.numeric(levels(Catch$lat))[Catch$lat]
-Catch$lon <- as.numeric(levels(Catch$lon))[Catch$lon]
 
-Catch_cell <- cbind(Catch, Cell) %>%
-  mutate(lat=floor(lat/10)*10+7.5,
-         lon=floor(lon/20)*20+12.5)
+# # combine the flag with catch data and then group catch
+# Catch_Fishery <- cbind(Catch, Cell) %>%
+#   group_by(year,quarter,Cell) %>%
+#   summarise(Total_Catch=sum(Catch)) %>%
+#   mutate(Cell=factor(Cell))
+# 
+# Catch_Fishery_plot <- cbind(Catch, Cell) %>%
+#   group_by(year,Cell) %>%
+#   summarise(Total_Catch=sum(Catch)) %>%
+#   mutate(Cell=factor(Cell))
+# 
+# ggplot(data=Catch_Fishery_plot) +
+#   geom_line(aes(x=year,y=Total_Catch,color=Cell)) +
+#   theme_bw()
+# 
+# write.csv(Catch_Fishery,file=paste0(save_dir,"LL_Catch_5.csv"),row.names = FALSE)
 
-# sample weighted LF
-LF_raw_cell <- left_join(LF_raw,Catch_cell) %>%
-  # mutate(LF_raised = LF * Catch) %>%
-  mutate(LF_raised = LF) %>%
-  select(year,quarter,lat,lon,Cell,Length,LF_raised) %>%
-  na.omit()
 
-# ggplot() +
-#   geom_point(aes(x=lon,y=lat),shape=2,data=LF_raw) +
-#   geom_point(aes(x=lon,y=lat,color=factor(Cell)),shape=3,data=Catch_cell)
-
-# ggplot() +
-  # geom_point(aes(x=lon,y=lat),shape=2,data=LF_raw) +
-  # geom_point(aes(x=lon,y=lat,color=factor(Cell)),data=LF_raw_cell)
-
-# combine the flag with catch data and then group catch
-LF_Fishery <- LF_raw_cell %>%
-  group_by(Cell,year,quarter,Length) %>%
-  summarise(lf_raised=sum(LF_raised)) %>%
-  group_by(Cell,year,quarter) %>%
-  mutate(lf_sum=sum(lf_raised)) %>%
-  filter(lf_sum > 0) %>%
-  mutate(lf=lf_raised/lf_sum) %>%
-  select(Cell,year,quarter,Length,lf) %>%
-  spread(Length,lf)
-
-write.csv(LF_Fishery,file=paste0(save_dir,"LL_LF_5.csv"),row.names = FALSE)
-
-# f1 <- LF_Fishery
-
-# catch weighted LF
-LF_raw_cell <- left_join(LF_raw,Catch_cell) %>%
-  mutate(LF_raised = LF * Catch) %>%
-  # mutate(LF_raised = LF) %>%
-  select(year,quarter,lat,lon,Cell,Length,LF_raised) %>%
-  na.omit()
-
-# combine the flag with catch data and then group catch
-LF_Fishery <- LF_raw_cell %>%
-  group_by(Cell,year,quarter,Length) %>%
-  summarise(lf_raised=sum(LF_raised)) %>%
-  group_by(Cell,year,quarter) %>%
-  mutate(lf_sum=sum(lf_raised)) %>%
-  filter(lf_sum > 0) %>%
-  mutate(lf=lf_raised/lf_sum) %>%
-  select(Cell,year,quarter,Length,lf) %>%
-  spread(Length,lf)
-
-write.csv(LF_Fishery,file=paste0(save_dir,"LL_LF_5_cw.csv"),row.names = FALSE)
+# # use the regression tree package to group lf
+# 
+# Catch$lat <- as.numeric(levels(Catch$lat))[Catch$lat]
+# Catch$lon <- as.numeric(levels(Catch$lon))[Catch$lon]
+# 
+# Catch_cell <- cbind(Catch, Cell) %>%
+#   mutate(lat=floor(lat/10)*10+7.5,
+#          lon=floor(lon/20)*20+12.5)
+# 
+# # sample weighted LF
+# LF_raw_cell <- left_join(LF_raw,Catch_cell) %>%
+#   # mutate(LF_raised = LF * Catch) %>%
+#   mutate(LF_raised = LF) %>%
+#   select(year,quarter,lat,lon,Cell,Length,LF_raised) %>%
+#   na.omit()
+# 
+# # ggplot() +
+# #   geom_point(aes(x=lon,y=lat),shape=2,data=LF_raw) +
+# #   geom_point(aes(x=lon,y=lat,color=factor(Cell)),shape=3,data=Catch_cell)
+# 
+# # ggplot() +
+#   # geom_point(aes(x=lon,y=lat),shape=2,data=LF_raw) +
+#   # geom_point(aes(x=lon,y=lat,color=factor(Cell)),data=LF_raw_cell)
+# 
+# # combine the flag with catch data and then group catch
+# LF_Fishery <- LF_raw_cell %>%
+#   group_by(Cell,year,quarter,Length) %>%
+#   summarise(lf_raised=sum(LF_raised)) %>%
+#   group_by(Cell,year,quarter) %>%
+#   mutate(lf_sum=sum(lf_raised)) %>%
+#   filter(lf_sum > 0) %>%
+#   mutate(lf=lf_raised/lf_sum) %>%
+#   select(Cell,year,quarter,Length,lf) %>%
+#   spread(Length,lf)
+# 
+# write.csv(LF_Fishery,file=paste0(save_dir,"LL_LF_5.csv"),row.names = FALSE)
+# 
+# # f1 <- LF_Fishery
+# 
+# # catch weighted LF
+# LF_raw_cell <- left_join(LF_raw,Catch_cell) %>%
+#   mutate(LF_raised = LF * Catch) %>%
+#   # mutate(LF_raised = LF) %>%
+#   select(year,quarter,lat,lon,Cell,Length,LF_raised) %>%
+#   na.omit()
+# 
+# # combine the flag with catch data and then group catch
+# LF_Fishery <- LF_raw_cell %>%
+#   group_by(Cell,year,quarter,Length) %>%
+#   summarise(lf_raised=sum(LF_raised)) %>%
+#   group_by(Cell,year,quarter) %>%
+#   mutate(lf_sum=sum(lf_raised)) %>%
+#   filter(lf_sum > 0) %>%
+#   mutate(lf=lf_raised/lf_sum) %>%
+#   select(Cell,year,quarter,Length,lf) %>%
+#   spread(Length,lf)
+# 
+# write.csv(LF_Fishery,file=paste0(save_dir,"LL_LF_5_cw.csv"),row.names = FALSE)
 # 
 # f2 <- LF_Fishery
 # 
