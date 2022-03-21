@@ -1,8 +1,8 @@
 library(VAST)
 library(tidyverse)
 
-load("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/CPUE_25.RData")
-load("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/LL_LF_25.RData")
+load("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/CPUE_5.RData")
+load("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/LL_LF_5.RData")
 
 LF_DF1 <- LF_DF %>% group_by(Year,Lat,Lon) %>%
   mutate(tot=sum(LF)) %>% filter(tot>0)
@@ -10,6 +10,16 @@ LF_DF1 <- LF_DF %>% group_by(Year,Lat,Lon) %>%
 LF_DF2 <- LF_DF1 %>% mutate(Lon=Lon-10)
 
 LF_DF <- rbind(LF_DF1,LF_DF2)
+
+# Data_Geostat2 <- Data_Geostat %>%
+#   mutate(Lat=floor(Lat/10)*10+7.5,
+#          Lon=floor(Lon/20)*20+12.5) %>%
+#   group_by(Year,Lat,Lon) %>%
+#   summarise(Catch_KG=mean(Catch_KG))
+# 
+# ggplot() +
+#   geom_point(aes(x=Lon,y=Lat),shape=2,data=Data_Geostat) +
+#   geom_point(aes(x=Lon,y=Lat),shape=3,color="red",data=LF_DF)
 
 Data <- left_join(LF_DF,Data_Geostat) %>%
   rename(Catch_KG2=Catch_KG) %>%
@@ -47,7 +57,7 @@ settings = make_settings( n_x=10, Region="Other", purpose="index2",max_cells=Inf
 # settings$use_anisotropy = FALSE
 settings$Options[['treat_nonencounter_as_zero']] = TRUE
 
-dir <- "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/VAST_LF/VAST_LF_25/"
+dir <- "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/VAST_LF/VAST_LF_5 - Copy/"
 dir.create(dir)
 setwd(dir)
 

@@ -37,54 +37,20 @@ data$N_cpue <- nrow(CPUE)
 # Delete tagging data
 data$do_tags <- 0
 
-# # Catch
-# Catch <- data$catch
-# 
-# PS_Catch <- read.csv("C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Tree/PS/PS_Catch.csv")
-# PS_Catch <- PS_Catch %>%
-#   spread(Cell,Total_Catch)
-# Catch[,11:13] <- PS_Catch[3:5] / 1000
-# 
-# # LL_Catch <- read.csv("C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Tree/LL/LL_Catch.csv")
-# # LL_Catch <- LL_Catch %>%
-# #   spread(Cell,Total_Catch)
-# # Catch[,4:7] <- LL_Catch[3:6] / 1000
-# 
-# data$catch <- Catch
-# 
-# # LF
-# LF0 <- data$lencomp
-# # remove old PS and LL LF (fleet 4-7, 11-13)
-# # LF0 <- LF0[which(LF0$FltSvy %in% c(1:3,8:10,14:17)),]
+LF0 <- data$lencomp
+# remove old PS and LL LF (fleet 4-7, 11-13)
+# LF0 <- LF0[which(LF0$FltSvy %in% c(1:3,8:10,14:17)),]
 # LF0 <- LF0[which(LF0$FltSvy %in% c(1:10,14:17)),]
-# 
-# PS_LF <- read.csv("C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Tree/PS/PS_LF.csv")
-# # new PS LF
-# PS_LF <- PS_LF %>%
-#   mutate(Yr=(year-1)*4+quarter,
-#          Seas=1,
-#          FltSvy=Cell+10,
-#          Gender=0,
-#          Part=0,
-#          Nsamp=5)
-# PS_LF_new <- PS_LF[,c(43:48,4:42)]
-# 
-# # LL_LF <- read.csv("C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Tree/LL/LL_LF.csv")
-# # # new LL LF
-# # LL_LF <- LL_LF %>%
-# #   mutate(Yr=(year-1)*4+quarter,
-# #          Seas=1,
-# #          FltSvy=Cell+3,
-# #          Gender=0,
-# #          Part=0,
-# #          Nsamp=5)
-# # LL_LF_new <- LL_LF[,c(43:48,4:42)]
-# 
-# # add new PS anf LL LF
-# LF <- rbind(data.matrix(LF0),data.matrix(PS_LF_new)) %>% data.frame()
-# names(LF) <- names(LF0)
-# data$lencomp <- LF
-# data$N_lencomp <- nrow(LF)
+
+N_LL <- read.csv("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Tree/LL/5_N.csv")
+LF0$Nsamp[which(LF0$FltSvy %in% 4:7)] <- N_LL$n
+
+N_PS <- read.csv("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Tree/PS/5_N.csv")
+
+LF0$Nsamp[which(LF0$FltSvy %in% 11:13)] <- N_PS$n
+
+data$lencomp <- LF0
+data$N_lencomp <- nrow(LF0)
 
 
 # # write data file
@@ -103,12 +69,12 @@ SS_LF <- read.csv(file="C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/VAS
 # SS_LF$Nsamp <- 5
 Line <- match("0 #_N_sizefreq_methods", File)
 File[Line] = 1 # N WtFreq methods to read
-File[Line+1] = 15 # nbins per method
+File[Line+1] = 14 # nbins per method
 File[Line+2] = 2 # units per each method
 File[Line+3] = 3 # scale per each method
 File[Line+4] = 0.000001 # mincomp to add to each obs (entry for each method)
 File[Line+5] = nrow(SS_LF) # Number of observations per method 
-File[Line+6] = paste0(gsub(", "," ",toString(seq(30,170,10)))) # size bins
+File[Line+6] = paste0(gsub(", "," ",toString(c(-30,seq(40,160,10))))) # size bins
 for (l in 1:nrow(SS_LF)) {
   File[Line+6+l] <- paste0(gsub(", "," ",toString(SS_LF[l,])))
 }
