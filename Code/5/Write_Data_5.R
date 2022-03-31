@@ -59,7 +59,7 @@ File[492] = "-1"
 File[493] = "1e-9"
 
 # Survey LF
-SS_LF <- read.csv(file="D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/VAST_LF/VAST_LF_5 - Copy/SS.csv")
+SS_LF <- read.csv(file="D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/VAST_LF/VAST_LF_5/SS.csv")
 # SS_LF$Nsamp <- 5
 Line <- match("0 #_N_sizefreq_methods", File)
 File[Line] = 1 # N WtFreq methods to read

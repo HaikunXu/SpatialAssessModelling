@@ -16,7 +16,7 @@ SSplotRunstest(Rep, add = T, subplot = "len", verbose = F)
 
 # R0 profile
 Path <- "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/diagnostics/R0/"
-R0 <- seq(10.776,12.276,0.3)
+R0 <- seq(10.75,12.25,0.3)
 
 N = length(R0)
 comps <- c(1:17)
@@ -96,10 +96,6 @@ Rep6 = SS_output(dir=Path6,ncols=400,covar=F)
 retroSummary <- SSsummarize(list(Rep1,Rep2,Rep3,Rep4,Rep5,Rep6))
 endyrvec <- retroSummary$endyrs + seq(0,-20,-4)
 
-
-retroModels <- SSgetoutput(dirvec=file.path(Path,paste("retro",seq(0,20,4),sep="")))
-retroSummary <- SSsummarize(retroModels)
-endyrvec <- retroSummary$endyrs + seq(0,-20,-4)
 SSplotComparisons(retroSummary, endyrvec=endyrvec, legendlabels=paste("Data",seq(0,-20,-4),"years"),
                   plot = FALSE, print = TRUE, plotdir = "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/diagnostics/Retro/")
 

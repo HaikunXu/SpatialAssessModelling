@@ -1,7 +1,7 @@
 library(VAST)
 library(tidyverse)
 
-for (i in 1:5) {
+for (i in 11:100) {
   
   load(paste0("C:/users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Loop/",toString(i),"/CPUE_5.RData"))
   load(paste0("C:/users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Loop/",toString(i),"/LL_LF_5.RData"))
@@ -52,9 +52,9 @@ for (i in 1:5) {
   
   write.csv(Nsamp,file=paste0(dir,"Nsamp.csv"),row.names = FALSE)
   
-  # skip_to_next <- FALSE
+  skip_to_next <- FALSE
   
-  # tryCatch({
+  tryCatch({
     fit = fit_model( settings = settings,
                      Lat_i = Data[,'Lat'],
                      Lon_i = Data[,'Lon'],
@@ -63,17 +63,20 @@ for (i in 1:5) {
                      b_i = Data[,'Catch_KG'],
                      a_i = Data[,'AreaSwept_km2'],
                      Npool = 1000000,
-                     newtonsteps = 1,
+                     newtonsteps = 2,
                      test_fit = FALSE,
                      working_dir=dir,
                      grid_dim_km = c(50,50),
                      observations_LL=Data[,c('Lat','Lon')])
-  # }, error = function(e) {skip_to_next <<- TRUE})
-  # if(skip_to_next) {next}  
+    
+    Results = plot_results(settings=settings, fit=fit)
+    save.image(file="all.RData")
+    
+  }, error = function(e) {skip_to_next <<- TRUE})
+  if(skip_to_next) {next}
   
   # if(fit$parameter_estimates$max_gradient<0.1) {
-    Results = plot_results(settings=settings, fit=fit)
-    # save.image(file="all.RData")
+
   # }
   
 }

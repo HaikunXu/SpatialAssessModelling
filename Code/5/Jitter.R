@@ -2,7 +2,7 @@ library(r4ss)
 library(tidyverse)
 
 Path <- "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/test1_5_rt_cw/"
-JitterPath <- paste0("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/test1_5_rt_cw/Jitter/",1:10)
+JitterPath <- paste0("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/diagnostics/Jitter/",5:5)
 
 profilemodels <- SSgetoutput(dirvec = JitterPath, getcovar = FALSE)
 

@@ -1,7 +1,7 @@
 library(VAST)
 library(tidyverse)
 
-for (i in 1:10) {
+for (i in 1:100) {
   
   load(paste0("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Loop/",toString(i),"/CPUE_5.RData"))
 
@@ -17,9 +17,9 @@ dir <- paste0("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/VAST_Index/Loop/",toStr
 dir.create(dir)  
 setwd(dir) 
 
-# skip_to_next <- FALSE
+skip_to_next <- FALSE
 
-# tryCatch({
+tryCatch({
   fit = fit_model(
     settings = settings,
     Lat_i = Data_Geostat[, 'Lat'],
@@ -35,16 +35,10 @@ setwd(dir)
     test_fit = FALSE,
     observations_LL = Data_Geostat[, c('Lat', 'Lon')]
   )
-# }, error = function(e) {
-#   skip_to_next <<- TRUE
-# })
-# if (skip_to_next) {
-#   next
-# } 
-
-if(fit$parameter_estimates$max_gradient<0.1) {
+  
   Results = plot_results(settings=settings, fit=fit)
-  # save.image(file="all.RData")
-}
+  
+  }, error = function(e) {skip_to_next <<- TRUE})
+if (skip_to_next) {next}
 
 }

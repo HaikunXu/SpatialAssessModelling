@@ -1,7 +1,7 @@
 library(r4ss)
 library(tidyverse)
 
-load("C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/YFT_SRD_4A_4.RData")
+load("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/YFT_4area_observations_1_100_ESS_25.RData")
 
 data <- dat_4A_4
 
@@ -21,14 +21,14 @@ fleetinfo <- rbind(data$fleetinfo[1:16,],llcpue=c(0.5, 1, 3, 0))
 
 # Survey CPUE
 data$CPUEinfo <- data$CPUEinfo[1:17,]
-CPUE <- read.csv("C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/VAST_Index/VAST_Index_5/Table_for_SS3.csv")
+CPUE <- read.csv("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/VAST_Index/VAST_Index_5/Table_for_SS3.csv")
 CPUE$Fleet <- 17
-CPUE$SD_log <- CPUE$SD_log + 0.075 - mean(CPUE$SD_log)
+CPUE$SD_log <- CPUE$SD_log
 data$CPUE <- CPUE[,1:5]
 data$N_cpue <- nrow(CPUE)
 
 # LF0 <- data$lencomp
-# LL_LF <- read.csv("C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/Old/Data/LL_LF_Nominal.csv")
+# LL_LF <- read.csv("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Old/Data/LL_LF_Nominal.csv")
 # LF <- rbind(data.matrix(LF0),data.matrix(LL_LF)) %>% data.frame()
 # names(LF) <- names(LF0)
 # data$lencomp <- LF
@@ -37,15 +37,16 @@ data$N_cpue <- nrow(CPUE)
 # Delete tagging data
 data$do_tags <- 0
 
+# LF
 LF0 <- data$lencomp
 # remove old PS and LL LF (fleet 4-7, 11-13)
 # LF0 <- LF0[which(LF0$FltSvy %in% c(1:3,8:10,14:17)),]
 # LF0 <- LF0[which(LF0$FltSvy %in% c(1:10,14:17)),]
 
-N_LL <- read.csv("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Tree/LL/5_N.csv")
+N_LL <- read.csv("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Tree/LL/25_N.csv")
 LF0$Nsamp[which(LF0$FltSvy %in% 4:7)] <- N_LL$n
 
-N_PS <- read.csv("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Tree/PS/5_N.csv")
+N_PS <- read.csv("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Tree/PS/25_N.csv")
 
 LF0$Nsamp[which(LF0$FltSvy %in% 11:13)] <- N_PS$n
 
@@ -54,10 +55,10 @@ data$N_lencomp <- nrow(LF0)
 
 
 # # write data file
-SS_writedat(data,outfile = "C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/test1_25/test_data.ss",version = "3.24",overwrite = TRUE)
+SS_writedat(data,outfile = "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/test1_25/test_data.ss",version = "3.24",overwrite = TRUE)
 
 # fix a bug in r4ss
-File <- readLines("C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/test1_25/test_data.ss", warn = F)
+File <- readLines("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/test1_25/test_data.ss", warn = F)
 File[19] = "1 #_Nsexes"
 
 # turn off comp tail compression
@@ -65,7 +66,7 @@ File[492] = "-1"
 File[493] = "1e-9"
 
 # Survey LF
-SS_LF <- read.csv(file="C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/VAST_LF/VAST_LF_25/SS.csv")
+SS_LF <- read.csv(file="D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/VAST_LF/VAST_LF_25/SS.csv")
 # SS_LF$Nsamp <- 5
 Line <- match("0 #_N_sizefreq_methods", File)
 File[Line] = 1 # N WtFreq methods to read
@@ -84,4 +85,4 @@ File[Line+8+nrow(SS_LF)] = 0 # no morphcomp data
 File[Line+9+nrow(SS_LF)] = 999
 File[Line+10+nrow(SS_LF)] = "ENDDATA"
 
-writeLines(File, "C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/test1_25/test_data.ss")
+writeLines(File, "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/test1_25/test_data.ss")

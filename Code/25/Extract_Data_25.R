@@ -12,7 +12,6 @@ rm(sim_1)
 # load("Data/sim_4_v2.RData")
 load("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/YFT_221cell_observations_1-100_ESS_25.RData")
 
-# sim_4 <- sim_41
 # LL CPUE data
 for (year in 81:256) {
   CPUE <- sim_4$obs[[paste0("simulated_cpue_ll_jpn_",year)]]
