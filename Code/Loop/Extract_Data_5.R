@@ -13,7 +13,7 @@ rm(sim_1)
 load("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/YFT_221cell_observations_1-100_ESS_05.RData")
 source("Code/Loop/Loop.R")
 
-for (i in 1:100) {
+for (i in 1:10) {
 
   loop_dir <- paste0("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Loop/",toString(i))
 dir.create(loop_dir)  
@@ -109,5 +109,21 @@ for (year in 1:256) {
 }
 
 save(Catch_DF, file="PS_Catch_5.RData")
+
+# LL catch data
+for (year in 1:256) {
+  # year=210
+  Catch <- sim_i$layers[[paste0("layer[fishing_ll_",year,"]")]]
+  
+  Catch_DF_year <- data.frame(Catch = as.numeric(Catch$data[1:(13*17)]),
+                              Lat = rep(Lat_grid$Lat,17),
+                              Lon = rep(Lon_grid$Lon,each=13),
+                              Year = year)
+  
+  if(year==1) Catch_DF <- Catch_DF_year
+  else Catch_DF <- rbind(Catch_DF,Catch_DF_year)
+}
+
+save(Catch_DF, file="LL_Catch_5.RData")
 
 }
