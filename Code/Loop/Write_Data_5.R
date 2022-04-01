@@ -12,6 +12,8 @@ for (i in 1:5) {
   Path <- "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/test1_5/"
   files = c(
     paste0(Path, "/go_nohess.bat"),
+    paste0(Path, "/go.bat"),
+    paste0(Path, "/ss3.par"),
     paste0(Path, "/starter.ss"),
     paste0(Path, "/forecast.ss"),
     paste0(Path, "/YFT_IO_raw.ctl"),

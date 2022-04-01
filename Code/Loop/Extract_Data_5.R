@@ -13,7 +13,7 @@ rm(sim_1)
 load("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/YFT_221cell_observations_1-100_ESS_05.RData")
 source("Code/Loop/Loop.R")
 
-for (i in 1:10) {
+for (i in 11:100) {
 
   loop_dir <- paste0("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Loop/",toString(i))
 dir.create(loop_dir)  

@@ -110,4 +110,20 @@ for (year in 1:256) {
 
 save(Catch_DF, file="PS_Catch_25.RData")
 
+# LL catch data
+for (year in 1:256) {
+  # year=210
+  Catch <- sim_i$layers[[paste0("layer[fishing_ll_",year,"]")]]
+  
+  Catch_DF_year <- data.frame(Catch = as.numeric(Catch$data[1:(13*17)]),
+                              Lat = rep(Lat_grid$Lat,17),
+                              Lon = rep(Lon_grid$Lon,each=13),
+                              Year = year)
+  
+  if(year==1) Catch_DF <- Catch_DF_year
+  else Catch_DF <- rbind(Catch_DF,Catch_DF_year)
+}
+
+save(Catch_DF, file="LL_Catch_25.RData")
+
 }

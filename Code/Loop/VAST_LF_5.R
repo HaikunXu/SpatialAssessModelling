@@ -1,7 +1,7 @@
 library(VAST)
 library(tidyverse)
 
-for (i in 11:100) {
+for (i in 42:100) {
   
   load(paste0("C:/users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Loop/",toString(i),"/CPUE_5.RData"))
   load(paste0("C:/users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Loop/",toString(i),"/LL_LF_5.RData"))
