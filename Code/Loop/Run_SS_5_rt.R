@@ -1,8 +1,10 @@
 library(r4ss)
 
-for (i in 1:10) {
-dir <- paste0("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/Loop/test_5_rt/",i,"/")
+for (re in 10:20) {
+dir <- paste0("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/Loop/test_5_rt/",re,"/")
 setwd(dir)
+
+print(paste0("******************************* Replicate: ",re," ******************************************"))
 
 # run the model with comp weight = 1
 File <- readLines(paste0(dir,"YFT_IO_raw.ctl"), warn = F) # read template control file
