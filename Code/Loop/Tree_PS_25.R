@@ -2,7 +2,7 @@
 
 library(tidyverse)
 
-for (i in 1:10) {
+for (i in 11:100) {
 ### Purse-seine
 save_dir <- paste0("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Loop/",i,"/")
 load(paste0(save_dir,"PS_LF_25.RData"))

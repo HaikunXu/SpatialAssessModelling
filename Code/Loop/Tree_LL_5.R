@@ -2,7 +2,7 @@
 
 library(tidyverse)
 
-for (i in 1:10) {
+for (i in 11:100) {
 ### LL
 save_dir <- paste0("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Loop/",i,"/")
 load(paste0(save_dir,"LL_LF_5.RData"))
