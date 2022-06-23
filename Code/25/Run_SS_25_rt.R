@@ -1,6 +1,6 @@
 library(r4ss)
 
-dir <- "C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/test1_25_rt/"
+dir <- "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/test1_25_rt/"
 setwd(dir)
 
 # run the model with comp weight = 1

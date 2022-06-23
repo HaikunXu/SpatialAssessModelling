@@ -4,7 +4,7 @@ library(tidyverse)
 load("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/YFT_4area_observations_1_100_ESS_25.RData")
 source("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Code/Loop/Loop.R")
 
-for (i in 1:10) {
+for (i in 1:50) {
   # create a new folder for SS files
   loop_dir <- paste0("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/Loop/test_25_rt_cw/",i,"/")
   dir.create(loop_dir)
@@ -13,7 +13,7 @@ for (i in 1:10) {
   files = c(
     paste0(Path, "/go_nohess.bat"),
     paste0(Path, "/go.bat"),
-    paste0(Path, "/ss3.par"),
+    # paste0(Path, "/ss3.par"),
     paste0(Path, "/starter.ss"),
     paste0(Path, "/forecast.ss"),
     paste0(Path, "/YFT_IO_raw.ctl"),

@@ -1,10 +1,10 @@
 library(VAST)
 library(tidyverse)
 
-for (i in 42:100) {
+for (i in 53:53) {
   
-  load(paste0("C:/users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Loop/",toString(i),"/CPUE_5.RData"))
-  load(paste0("C:/users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Loop/",toString(i),"/LL_LF_5.RData"))
+  load(paste0("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Loop/",toString(i),"/CPUE_5.RData"))
+  load(paste0("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Loop/",toString(i),"/LL_LF_5.RData"))
   
   LF_DF <- LF_DF %>% group_by(Year,Lat,Lon) %>%
     mutate(tot=sum(LF)) %>% filter(tot>0)
@@ -37,7 +37,7 @@ for (i in 42:100) {
   # settings$use_anisotropy = FALSE
   settings$Options[['treat_nonencounter_as_zero']] = TRUE
   
-  dir <- paste0("C:/users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/VAST_LF/Loop/",toString(i),"/")
+  dir <- paste0("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/VAST_LF/Loop/",toString(i),"/")
   dir.create(dir)  
   setwd(dir) 
 
@@ -70,7 +70,7 @@ for (i in 42:100) {
                      observations_LL=Data[,c('Lat','Lon')])
     
     Results = plot_results(settings=settings, fit=fit)
-    save.image(file="all.RData")
+    # save.image(file="all.RData")
     
   }, error = function(e) {skip_to_next <<- TRUE})
   if(skip_to_next) {next}

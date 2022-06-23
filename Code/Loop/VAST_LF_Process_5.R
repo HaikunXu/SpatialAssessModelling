@@ -1,6 +1,6 @@
 library(tidyverse)
 
-for (i in 11:50) {
+for (i in c(41:46,48:52,54:84,86:100)) {
 data <- read.csv(paste0("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/VAST_LF/Loop/",i,"/Table_for_SS3.csv"))
 
 LF <- data %>% mutate(Length=Category*10+30) %>%

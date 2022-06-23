@@ -4,7 +4,7 @@ library(tidyverse)
 load("C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/YFT_4area_observations_1_100_ESS_05.RData")
 source("C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Code/Loop/Loop.R")
 
-for (i in 1:10) {
+for (i in c(41:46,48:52,54:84,86:100)) {
   # create a new folder for SS files
   loop_dir <- paste0("C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/Loop/test_5_rt/",i,"/")
   dir.create(loop_dir)

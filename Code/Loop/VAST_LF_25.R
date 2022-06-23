@@ -1,10 +1,10 @@
 library(VAST)
 library(tidyverse)
 
-for (i in 33:100) {
+for (i in 53:100) {
   
-  load(paste0("C:/users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Loop/",toString(i),"/CPUE_25.RData"))
-  load(paste0("C:/users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Loop/",toString(i),"/LL_LF_25.RData"))
+  load(paste0("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Loop/",toString(i),"/CPUE_25.RData"))
+  load(paste0("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Loop/",toString(i),"/LL_LF_25.RData"))
   
   LF_DF <- LF_DF %>% group_by(Year,Lat,Lon) %>%
     mutate(tot=sum(LF)) %>% filter(tot>0)
@@ -37,7 +37,7 @@ for (i in 33:100) {
   # settings$use_anisotropy = FALSE
   settings$Options[['treat_nonencounter_as_zero']] = TRUE
   
-  dir <- paste0("C:/users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/VAST_LF/Loop-Copy/",toString(i),"/")
+  dir <- paste0("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/VAST_LF/Loop-Copy/",toString(i),"/")
   dir.create(dir)  
   setwd(dir) 
   

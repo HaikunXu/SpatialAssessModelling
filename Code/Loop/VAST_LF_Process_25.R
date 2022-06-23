@@ -1,6 +1,6 @@
 library(tidyverse)
 
-for (i in 1:10) {
+for (i in 1:50) {
 data <- read.csv(paste0("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/VAST_LF/Loop-Copy/",i,"/Table_for_SS3.csv"))
 
 LF <- data %>% mutate(Length=Category*10+30) %>%

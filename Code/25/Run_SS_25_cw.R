@@ -1,6 +1,6 @@
 library(r4ss)
 
-dir <- "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/test1_25_rt_cw/"
+dir <- "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/test1_25_cw/"
 setwd(dir)
 
 # run the model with comp weight = 1
@@ -62,3 +62,4 @@ ss <- shell(cmd = command, intern = T, wait = T)
 # plor results
 Rep = SS_output(dir=dir,ncols=400,covar=T)
 SS_plots(replist=Rep, forecastplot=F, uncertainty=T, datplot=T, btarg=0, minbthresh=0)
+
