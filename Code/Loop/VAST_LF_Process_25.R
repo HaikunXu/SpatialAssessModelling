@@ -1,7 +1,7 @@
 library(tidyverse)
 
-for (i in 1:10) {
-data <- read.csv(paste0("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/VAST_LF/Loop-Copy/",i,"/Table_for_SS3.csv"))
+for (i in 51:100) {
+data <- read.csv(paste0("C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/VAST_LF/Loop-Copy/",i,"/Table_for_SS3.csv"))
 
 LF <- data %>% mutate(Length=Category*10+30) %>%
   group_by(Year) %>% mutate(Index=sum(Estimate_metric_tons)) %>%
@@ -10,7 +10,7 @@ LF <- data %>% mutate(Length=Category*10+30) %>%
   select(Year,Length,LF) %>%
   spread(Length,LF)
 
-Nsamp <- read.csv(paste0("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/VAST_LF/Loop-Copy/",i,"/Nsamp.csv"))
+Nsamp <- read.csv(paste0("C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/VAST_LF/Loop-Copy/",i,"/Nsamp.csv"))
 
 LF_SS <- data.frame(method=1,
                     Yr=LF$Year,
@@ -22,6 +22,6 @@ LF_SS <- data.frame(method=1,
 
 LF_SS <- cbind(LF_SS,LF[,-1])
 
-write.csv(LF_SS,file=paste0("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/VAST_LF/Loop-Copy/",i,"/SS.csv"),row.names = FALSE)
+write.csv(LF_SS,file=paste0("C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/VAST_LF/Loop-Copy/",i,"/SS.csv"),row.names = FALSE)
 
 }

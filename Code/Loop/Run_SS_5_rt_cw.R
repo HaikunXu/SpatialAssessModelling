@@ -1,6 +1,6 @@
 library(r4ss)
 
-for (re in 1:10) {
+for (re in c(63:84,86:100)) {
   dir <- paste0("C:/USers/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/Loop/test_5_rt_cw/",re,"/")
   setwd(dir)
   
