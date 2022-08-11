@@ -1,6 +1,7 @@
 library(r4ss)
 library(tidyverse)
 
+<<<<<<< HEAD
 load("C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/YFT_4area_observations_1_100_ESS_25.RData")
 source("C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Code/Loop/Loop.R")
 
@@ -10,6 +11,17 @@ for (i in 51:100) {
   dir.create(loop_dir)
   
   Path <- "C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/test1_25_cw/"
+=======
+load("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/YFT_4area_observations_1_100_ESS_25.RData")
+source("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Code/Loop/Loop.R")
+
+for (i in 1:50) {
+  # create a new folder for SS files
+  loop_dir <- paste0("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/Loop/test_25_cw/",i,"/")
+  dir.create(loop_dir)
+  
+  Path <- "D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/test1_25_cw/"
+>>>>>>> aa4dc4d7a6056112e6582ed7753907d0a0aa348f
   files = c(
     paste0(Path, "/go_nohess.bat"),
     paste0(Path, "/go.bat"),
@@ -41,7 +53,11 @@ fleetinfo <- rbind(data$fleetinfo[1:16,],llcpue=c(0.5, 1, 3, 0))
 
 # Survey CPUE
 data$CPUEinfo <- data$CPUEinfo[1:17,]
+<<<<<<< HEAD
 CPUE <- read.csv(paste0("C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/VAST_Index/Loop/",i,"/Table_for_SS3.csv"))
+=======
+CPUE <- read.csv(paste0("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/VAST_Index/Loop/",i,"/Table_for_SS3.csv"))
+>>>>>>> aa4dc4d7a6056112e6582ed7753907d0a0aa348f
 CPUE$Fleet <- 17
 CPUE$SD_log <- CPUE$SD_log
 data$CPUE <- CPUE[,1:5]
@@ -55,10 +71,17 @@ data$do_tags <- 0
 LF0 <- data$lencomp
 LF0 <- LF0[which(LF0$FltSvy %in% c(1:10,14:17)),]
 
+<<<<<<< HEAD
 N_LL <- read.csv(paste0("C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Loop/",i,"/LL_25_N.csv"))
 LF0$Nsamp[which(LF0$FltSvy %in% 4:7)] <- N_LL$n
 
 PS_LF <- read.csv(paste0("C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Loop/",i,"/PS_LF_25_cw_nort.csv"))
+=======
+N_LL <- read.csv(paste0("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Loop/",i,"/LL_25_N.csv"))
+LF0$Nsamp[which(LF0$FltSvy %in% 4:7)] <- N_LL$n
+
+PS_LF <- read.csv(paste0("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/SpatialAssessModelling/Data/Loop/",i,"/PS_LF_25_cw_nort.csv"))
+>>>>>>> aa4dc4d7a6056112e6582ed7753907d0a0aa348f
 
 # new PS LF
 PS_LF <- PS_LF %>%
@@ -88,7 +111,11 @@ File[492] = "-1"
 File[493] = "1e-9"
 
 # Survey LF
+<<<<<<< HEAD
 SS_LF <- read.csv(file=paste0("C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/VAST_LF/Loop-Copy/",i,"/SS.csv"))
+=======
+SS_LF <- read.csv(file=paste0("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/VAST_LF/Loop-Copy/",i,"/SS.csv"))
+>>>>>>> aa4dc4d7a6056112e6582ed7753907d0a0aa348f
 # SS_LF$Nsamp <- 5
 Line <- match("0 #_N_sizefreq_methods", File)
 File[Line] = 1 # N WtFreq methods to read

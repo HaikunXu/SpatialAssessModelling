@@ -1,7 +1,12 @@
 library(tidyverse)
 
+<<<<<<< HEAD
 for (i in 51:100) {
 data <- read.csv(paste0("C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/VAST_LF/Loop-Copy/",i,"/Table_for_SS3.csv"))
+=======
+for (i in 1:50) {
+data <- read.csv(paste0("D:/OneDrive - IATTC/IATTC/2021/Spatial-SA/VAST_LF/Loop-Copy/",i,"/Table_for_SS3.csv"))
+>>>>>>> aa4dc4d7a6056112e6582ed7753907d0a0aa348f
 
 LF <- data %>% mutate(Length=Category*10+30) %>%
   group_by(Year) %>% mutate(Index=sum(Estimate_metric_tons)) %>%

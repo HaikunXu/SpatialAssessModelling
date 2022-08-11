@@ -1,6 +1,10 @@
 library(r4ss)
 
+<<<<<<< HEAD
 for (re in c(73:84,86:100)) {
+=======
+for (re in c(63:84,86:100)) {
+>>>>>>> aa4dc4d7a6056112e6582ed7753907d0a0aa348f
   # for (re in c(41:46,48:52,54:84,86:100)) {
   dir <- paste0("C:/Users/hkxu/OneDrive - IATTC/IATTC/2021/Spatial-SA/Model/Loop/test_5_rt/",re,"/")
   setwd(dir)
